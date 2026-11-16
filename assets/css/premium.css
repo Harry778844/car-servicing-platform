@@ -1,31 +1,34 @@
 /* ===================================================================
-   AutoPro - Ultra-Premium Luxury Automotive Styling
-   Palette: Deep Obsidian (#07080b) + Carbon Gray (#12141c) + 
-            Electric Crimson Glow (#ff1e38) + Pure Titanium White
+   AutoPro - Multi-Palette Ultra-Premium Luxury Styling
+   Supported Themes:
+     1. Cyber Gold & Obsidian (Default: #f59e0b, #fbbf24) - Rolls-Royce / Bugatti Atelier
+     2. Electric Cyan & Midnight Blue (#00f0ff, #06b6d4) - Porsche Taycan / AMG Concept
+     3. Emerald Velocity (#00ff88, #10b981) - Aston Martin F1
+     4. Neon Crimson (#ff1e38, #ff334b) - Scuderia Racing
    =================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Rajdhani:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Rajdhani:wght@500;600;700;800&display=swap');
 
-:root {
-  --bg-deep: #07080b;
-  --bg-card: rgba(18, 20, 29, 0.75);
-  --bg-surface: #141622;
-  --bg-surface-elevated: #1b1e2e;
+:root, [data-theme="gold"] {
+  --bg-deep: #07080c;
+  --bg-card: rgba(18, 20, 29, 0.78);
+  --bg-surface: #141724;
+  --bg-surface-elevated: #1d2133;
   --border-glass: rgba(255, 255, 255, 0.08);
-  --border-glow: rgba(255, 30, 56, 0.35);
 
-  --crimson: #ff1e38;
-  --crimson-hover: #ff334b;
-  --crimson-glow: 0 0 25px rgba(255, 30, 56, 0.45);
-  --crimson-subtle: rgba(255, 30, 56, 0.12);
+  /* Primary Accent: Cyber Gold / Amber */
+  --accent: #f59e0b;
+  --accent-hover: #fbbf24;
+  --accent-glow: 0 0 28px rgba(245, 158, 11, 0.45);
+  --accent-subtle: rgba(245, 158, 11, 0.12);
+  --border-glow: rgba(245, 158, 11, 0.4);
+  --gradient-btn: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
+  --gradient-btn-hover: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+  --theme-ambient: radial-gradient(circle at 85% 10%, rgba(245, 158, 11, 0.12) 0%, transparent 45%);
 
   --text-white: #ffffff;
   --text-gray: #94a3b8;
   --text-dim: #64748b;
-
-  --gold: #f59e0b;
-  --emerald: #10b981;
-  --cyan: #06b6d4;
 
   --font-display: 'Rajdhani', sans-serif;
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -35,11 +38,44 @@
   --transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+[data-theme="cyan"] {
+  --accent: #00f0ff;
+  --accent-hover: #38bdf8;
+  --accent-glow: 0 0 28px rgba(0, 240, 255, 0.5);
+  --accent-subtle: rgba(0, 240, 255, 0.12);
+  --border-glow: rgba(0, 240, 255, 0.4);
+  --gradient-btn: linear-gradient(135deg, #00f0ff 0%, #0284c7 100%);
+  --gradient-btn-hover: linear-gradient(135deg, #38bdf8 0%, #0369a1 100%);
+  --theme-ambient: radial-gradient(circle at 85% 10%, rgba(0, 240, 255, 0.12) 0%, transparent 45%);
+}
+
+[data-theme="emerald"] {
+  --accent: #00ff88;
+  --accent-hover: #10b981;
+  --accent-glow: 0 0 28px rgba(0, 255, 136, 0.45);
+  --accent-subtle: rgba(0, 255, 136, 0.12);
+  --border-glow: rgba(0, 255, 136, 0.4);
+  --gradient-btn: linear-gradient(135deg, #00ff88 0%, #059669 100%);
+  --gradient-btn-hover: linear-gradient(135deg, #10b981 0%, #047857 100%);
+  --theme-ambient: radial-gradient(circle at 85% 10%, rgba(0, 255, 136, 0.12) 0%, transparent 45%);
+}
+
+[data-theme="crimson"] {
+  --accent: #ff1e38;
+  --accent-hover: #ff334b;
+  --accent-glow: 0 0 28px rgba(255, 30, 56, 0.45);
+  --accent-subtle: rgba(255, 30, 56, 0.12);
+  --border-glow: rgba(255, 30, 56, 0.4);
+  --gradient-btn: linear-gradient(135deg, #ff1e38 0%, #c40b21 100%);
+  --gradient-btn-hover: linear-gradient(135deg, #ff334b 0%, #db0e26 100%);
+  --theme-ambient: radial-gradient(circle at 85% 10%, rgba(255, 30, 56, 0.12) 0%, transparent 45%);
+}
+
 body {
   background-color: var(--bg-deep);
   background-image: 
-    radial-gradient(circle at 85% 10%, rgba(255, 30, 56, 0.12) 0%, transparent 45%),
-    radial-gradient(circle at 15% 50%, rgba(6, 182, 212, 0.05) 0%, transparent 40%),
+    var(--theme-ambient),
+    radial-gradient(circle at 15% 50%, rgba(255, 255, 255, 0.02) 0%, transparent 40%),
     linear-gradient(180deg, #090a0f 0%, #06070a 100%);
   color: var(--text-white);
   font-family: var(--font-sans);
@@ -48,12 +84,17 @@ body {
   padding: 0;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.4s ease;
 }
 
 h1, h2, h3, h4, h5, h6, .display-font {
   font-family: var(--font-display);
   letter-spacing: 0.5px;
   text-transform: uppercase;
+}
+
+.text-accent {
+  color: var(--accent) !important;
 }
 
 /* Glassmorphism Luxury Cards */
@@ -68,40 +109,39 @@ h1, h2, h3, h4, h5, h6, .display-font {
 }
 .glass-panel:hover {
   border-color: var(--border-glow);
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8), var(--crimson-glow);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8), var(--accent-glow);
 }
 
-/* Luxury Buttons */
-.btn-crimson {
-  background: linear-gradient(135deg, #ff1e38 0%, #c40b21 100%);
-  color: #fff !important;
+/* Luxury Primary Accent Buttons */
+.btn-accent {
+  background: var(--gradient-btn);
+  color: #000 !important;
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 1px;
   text-transform: uppercase;
   border: none;
   border-radius: var(--radius-sm);
   padding: 0.75rem 1.6rem;
-  box-shadow: 0 4px 20px rgba(255, 30, 56, 0.35);
+  box-shadow: var(--accent-glow);
   transition: var(--transition);
   position: relative;
   overflow: hidden;
   cursor: pointer;
 }
-.btn-crimson::before {
+.btn-accent::before {
   content: '';
   position: absolute;
   top: 0; left: -100%;
   width: 100%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
   transition: 0.5s;
 }
-.btn-crimson:hover {
-  background: linear-gradient(135deg, #ff334b 0%, #db0e26 100%);
-  box-shadow: 0 8px 30px rgba(255, 30, 56, 0.6);
+.btn-accent:hover {
+  background: var(--gradient-btn-hover);
   transform: translateY(-2px);
 }
-.btn-crimson:hover::before {
+.btn-accent:hover::before {
   left: 100%;
 }
 
@@ -125,26 +165,27 @@ h1, h2, h3, h4, h5, h6, .display-font {
   transform: translateY(-2px);
 }
 
-.btn-outline-crimson {
+.btn-outline-accent {
   background: transparent;
-  color: var(--crimson) !important;
-  border: 1px solid var(--crimson);
+  color: var(--accent) !important;
+  border: 1px solid var(--accent);
   font-family: var(--font-display);
   font-weight: 700;
   letter-spacing: 0.5px;
   text-transform: uppercase;
   border-radius: var(--radius-sm);
   transition: var(--transition);
+  cursor: pointer;
 }
-.btn-outline-crimson:hover {
-  background: var(--crimson);
-  color: #fff !important;
-  box-shadow: var(--crimson-glow);
+.btn-outline-accent:hover {
+  background: var(--accent);
+  color: #000 !important;
+  box-shadow: var(--accent-glow);
 }
 
 /* Nav & Header */
 .premium-nav {
-  background: rgba(7, 8, 11, 0.85);
+  background: rgba(7, 8, 12, 0.88);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border-glass);
@@ -159,8 +200,8 @@ h1, h2, h3, h4, h5, h6, .display-font {
   letter-spacing: 1px;
 }
 .brand-logo span {
-  color: var(--crimson);
-  text-shadow: 0 0 15px rgba(255, 30, 56, 0.6);
+  color: var(--accent);
+  text-shadow: 0 0 15px var(--accent-glow);
 }
 
 /* Service Card Luxury */
@@ -181,14 +222,14 @@ h1, h2, h3, h4, h5, h6, .display-font {
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, var(--crimson), transparent);
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
   opacity: 0;
   transition: var(--transition);
 }
 .premium-service-card:hover {
   transform: translateY(-6px);
-  border-color: rgba(255, 30, 56, 0.4);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(255, 30, 56, 0.15);
+  border-color: var(--border-glow);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), var(--accent-glow);
 }
 .premium-service-card:hover::after {
   opacity: 1;
@@ -198,20 +239,20 @@ h1, h2, h3, h4, h5, h6, .display-font {
   width: 54px;
   height: 54px;
   border-radius: var(--radius-md);
-  background: var(--crimson-subtle);
-  border: 1px solid rgba(255, 30, 56, 0.25);
+  background: var(--accent-subtle);
+  border: 1px solid var(--border-glow);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.5rem;
-  color: var(--crimson);
+  color: var(--accent);
   margin-bottom: 1.25rem;
   transition: var(--transition);
 }
 .premium-service-card:hover .service-icon-box {
-  background: var(--crimson);
-  color: #fff;
-  box-shadow: var(--crimson-glow);
+  background: var(--accent);
+  color: #000;
+  box-shadow: var(--accent-glow);
   transform: scale(1.05);
 }
 
@@ -230,7 +271,7 @@ h1, h2, h3, h4, h5, h6, .display-font {
   top: 15px;
   bottom: 15px;
   width: 2px;
-  background: linear-gradient(180deg, var(--crimson) 0%, rgba(255, 255, 255, 0.1) 100%);
+  background: linear-gradient(180deg, var(--accent) 0%, rgba(255, 255, 255, 0.1) 100%);
 }
 .stepper-node-lux {
   position: absolute;
@@ -251,23 +292,33 @@ h1, h2, h3, h4, h5, h6, .display-font {
   transition: var(--transition);
 }
 .step-item.completed .stepper-node-lux {
-  background: var(--emerald);
-  border-color: var(--emerald);
+  background: #10b981;
+  border-color: #10b981;
   color: #fff;
   box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
 }
 .step-item.active .stepper-node-lux {
-  background: var(--crimson);
+  background: var(--accent);
   border-color: #fff;
-  color: #fff;
-  box-shadow: var(--crimson-glow);
+  color: #000;
+  box-shadow: var(--accent-glow);
   animation: pulse-ring 2s infinite;
 }
 
 @keyframes pulse-ring {
-  0% { box-shadow: 0 0 0 0 rgba(255, 30, 56, 0.8); }
-  70% { box-shadow: 0 0 0 12px rgba(255, 30, 56, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(255, 30, 56, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.8); }
+  70% { box-shadow: 0 0 0 12px rgba(245, 158, 11, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+}
+
+/* Badge styling */
+.badge-accent {
+  background: var(--accent-subtle);
+  color: var(--accent);
+  border: 1px solid var(--border-glow);
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.5px;
 }
 
 /* Telematics KPI Cards */
@@ -280,14 +331,14 @@ h1, h2, h3, h4, h5, h6, .display-font {
 }
 .kpi-card:hover {
   background: rgba(26, 30, 45, 0.8);
-  border-color: rgba(255, 30, 56, 0.3);
+  border-color: var(--border-glow);
 }
 
 /* Modals */
 .modal-content.luxury-modal {
   background: #0d0f17;
-  border: 1px solid rgba(255, 30, 56, 0.3);
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(255, 30, 56, 0.2);
+  border: 1px solid var(--border-glow);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), var(--accent-glow);
   border-radius: var(--radius-lg);
 }
 
@@ -302,11 +353,27 @@ h1, h2, h3, h4, h5, h6, .display-font {
 }
 .luxury-input:focus {
   background-color: #1a1e2d;
-  border-color: var(--crimson);
+  border-color: var(--accent);
   color: #fff;
-  box-shadow: 0 0 0 3px rgba(255, 30, 56, 0.25);
+  box-shadow: 0 0 0 3px var(--accent-subtle);
   outline: none;
 }
 .luxury-input::placeholder {
   color: #555e70;
+}
+
+/* Theme Switcher Widget */
+.theme-picker-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: var(--transition);
+  padding: 0;
+}
+.theme-picker-btn:hover, .theme-picker-btn.active {
+  transform: scale(1.2);
+  border-color: #fff;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }

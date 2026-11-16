@@ -1,6 +1,7 @@
 /**
  * AutoPro - Ultra-Premium React 18 Application
  * Full Interactive Automotive Maintenance & Telematics Suite
+ * Featuring Dynamic Luxury Theme Switching (Cyber Gold, Electric Cyan, Emerald Velocity, Neon Crimson)
  */
 
 const { useState, useEffect, useMemo } = React;
@@ -33,6 +34,14 @@ const STATUS_PIPELINE = [
   'Ready for Delivery',
   'Out for Delivery',
   'Delivered'
+];
+
+// Luxury Palettes
+const THEMES = [
+  { id: 'gold', name: 'Cyber Gold & Obsidian', color: '#f59e0b', bg: '#07080c' },
+  { id: 'cyan', name: 'Electric Cyan & Midnight', color: '#00f0ff', bg: '#060812' },
+  { id: 'emerald', name: 'Emerald Velocity', color: '#00ff88', bg: '#060d09' },
+  { id: 'crimson', name: 'Neon Crimson', color: '#ff1e38', bg: '#08080a' }
 ];
 
 // Initial Seed Bookings
@@ -98,6 +107,7 @@ const INITIAL_BOOKINGS = [
 ];
 
 function AutoProApp() {
+  const [currentTheme, setCurrentTheme] = useState('gold'); // Default to Cyber Gold & Obsidian
   const [bookings, setBookings] = useState(INITIAL_BOOKINGS);
   const [activeTrackingQuery, setActiveTrackingQuery] = useState('BK-2026-001');
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -106,7 +116,7 @@ function AutoProApp() {
   // Modals state
   const [isBookModalOpen, setIsBookModalOpen] = useState(false);
   const [isPortalModalOpen, setIsPortalModalOpen] = useState(false);
-  const [portalTab, setPortalTab] = useState('customer'); // 'customer', 'admin', 'pickup', 'technician'
+  const [portalTab, setPortalTab] = useState('customer');
   const [isEstimateModalOpen, setIsEstimateModalOpen] = useState(false);
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
 
@@ -121,7 +131,11 @@ function AutoProApp() {
   });
   const [wTime, setWTime] = useState('09:00 AM - 11:00 AM');
   const [wAddress, setWAddress] = useState('Flat 402, Skyline Towers, Sector 45, Gurugram');
-  const [wNotes, setWNotes] = useState('');
+
+  // Sync theme attribute to HTML tag
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', currentTheme);
+  }, [currentTheme]);
 
   // Active tracking booking
   const activeBooking = useMemo(() => {
@@ -238,28 +252,43 @@ function AutoProApp() {
       {/* Toast Notification */}
       {toast && (
         <div className="position-fixed bottom-0 end-0 p-3" style={{ zIndex: 9999 }}>
-          <div className={`toast show align-items-center text-white bg-${toast.type === 'success' ? 'danger' : 'dark'} border border-secondary shadow-lg p-2 rounded`}>
+          <div className="toast show align-items-center text-white bg-dark border border-secondary shadow-lg p-2 rounded">
             <div className="d-flex align-items-center">
-              <i className="fa-solid fa-circle-check text-white fs-5 me-2 ms-2"></i>
+              <i className="fa-solid fa-circle-check text-accent fs-5 me-2 ms-2"></i>
               <div className="toast-body fw-bold">{toast.msg}</div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Top Helpline Bar */}
+      {/* Top Luxury Bar with Color Switcher */}
       <div className="bg-black py-2 border-bottom border-dark small">
-        <div className="container d-flex justify-content-between align-items-center">
+        <div className="container d-flex flex-wrap justify-content-between align-items-center gap-2">
           <div>
-            <span className="text-white me-3"><i className="fa-solid fa-phone text-danger me-1"></i> Hotline: <a href="tel:+918004567890" className="text-white fw-bold">+91 (800) 456-7890</a></span>
-            <span className="text-muted d-none d-md-inline"><i class="fa-solid fa-shield-halved text-danger me-1"></i> 100% Genuine OEM Spares &bull; 6-Month Service Warranty</span>
+            <span className="text-white me-3"><i className="fa-solid fa-phone text-accent me-1"></i> Hotline: <a href="tel:+918004567890" className="text-white fw-bold">+91 (800) 456-7890</a></span>
+            <span className="text-muted d-none d-md-inline"><i className="fa-solid fa-shield-halved text-accent me-1"></i> 100% Genuine OEM Spares &bull; 6-Month Warranty</span>
           </div>
-          <div className="d-flex align-items-center gap-2">
-            <span className="badge bg-danger bg-opacity-25 text-danger border border-danger">
-              <span className="live-tag-pulse"></span>React 18 Active
-            </span>
-            <a href="https://github.com/Harry778844/car-servicing-platform" target="_blank" className="text-muted text-decoration-none">
-              <i className="fa-brands fa-github text-danger me-1"></i>GitHub Repo
+
+          <div className="d-flex align-items-center gap-3">
+            {/* 4 Interactive Theme Palettes */}
+            <div className="d-flex align-items-center gap-2 px-2 py-1 rounded bg-dark border border-secondary">
+              <span className="text-muted text-uppercase" style={{ fontSize: '0.7rem' }}>Theme:</span>
+              {THEMES.map(t => (
+                <button
+                  key={t.id}
+                  title={t.name}
+                  className={`theme-picker-btn ${currentTheme === t.id ? 'active' : ''}`}
+                  style={{ backgroundColor: t.color }}
+                  onClick={() => {
+                    setCurrentTheme(t.id);
+                    showToast(`Switched palette to ${t.name}`);
+                  }}
+                ></button>
+              ))}
+            </div>
+
+            <a href="https://github.com/Harry778844/car-servicing-platform" target="_blank" className="text-muted text-decoration-none small">
+              <i className="fa-brands fa-github text-accent me-1"></i>GitHub
             </a>
           </div>
         </div>
@@ -269,21 +298,21 @@ function AutoProApp() {
       <nav className="premium-nav sticky-top">
         <div className="container d-flex justify-content-between align-items-center">
           <a href="#" className="brand-logo text-decoration-none d-flex align-items-center">
-            <i className="fa-solid fa-car-tunnel me-2 text-danger"></i>AUTO<span>PRO</span>
+            <i className="fa-solid fa-car-tunnel me-2 text-accent"></i>AUTO<span>PRO</span>
           </a>
 
           <div className="d-none d-lg-flex align-items-center gap-4">
-            <a href="#services" className="text-light text-decoration-none small text-uppercase fw-semibold hover-red">Services</a>
-            <a href="#telematics" className="text-light text-decoration-none small text-uppercase fw-semibold hover-red">12-Stage Tracker</a>
-            <a href="#workflow" className="text-light text-decoration-none small text-uppercase fw-semibold hover-red">Workflow</a>
-            <a href="#guarantee" className="text-light text-decoration-none small text-uppercase fw-semibold hover-red">Warranty</a>
+            <a href="#services" className="text-light text-decoration-none small text-uppercase fw-semibold">Services</a>
+            <a href="#telematics" className="text-light text-decoration-none small text-uppercase fw-semibold">12-Stage Tracker</a>
+            <a href="#workflow" className="text-light text-decoration-none small text-uppercase fw-semibold">Workflow</a>
+            <a href="#guarantee" className="text-light text-decoration-none small text-uppercase fw-semibold">Warranty</a>
           </div>
 
           <div className="d-flex align-items-center gap-2">
             <button className="btn-glass btn-sm" onClick={() => setIsPortalModalOpen(true)}>
-              <i className="fa-solid fa-gauge-high text-danger me-1"></i>Portals Demo
+              <i className="fa-solid fa-gauge-high text-accent me-1"></i>Portals Demo
             </button>
-            <button className="btn-crimson btn-sm" onClick={() => { setWizardStep(1); setIsBookModalOpen(true); }}>
+            <button className="btn-accent btn-sm" onClick={() => { setWizardStep(1); setIsBookModalOpen(true); }}>
               <i className="fa-solid fa-calendar-check me-1"></i>Book Pickup
             </button>
           </div>
@@ -295,21 +324,21 @@ function AutoProApp() {
         <div className="container py-4">
           <div className="row align-items-center g-5">
             <div className="col-lg-7">
-              <div className="d-inline-flex align-items-center px-3 py-1 rounded-pill mb-3" style={{ background: 'rgba(255, 30, 56, 0.1)', border: '1px solid rgba(255, 30, 56, 0.3)' }}>
-                <span className="live-tag-pulse"></span>
-                <span className="small text-danger fw-bold text-uppercase" style={{ letterSpacing: '1px' }}>Autonomous Telematics & Doorstep Car Care</span>
+              <div className="d-inline-flex align-items-center px-3 py-1 rounded-pill mb-3" style={{ background: 'var(--accent-subtle)', border: '1px solid var(--border-glow)' }}>
+                <span className="live-tag-pulse" style={{ backgroundColor: 'var(--accent)' }}></span>
+                <span className="small text-accent fw-bold text-uppercase" style={{ letterSpacing: '1px' }}>Autonomous Telematics & Doorstep Car Care</span>
               </div>
 
               <h1 className="display-4 fw-bold text-white mb-3" style={{ lineHeight: 1.15 }}>
-                PRECISION SERVICING. <br/><span className="text-danger" style={{ textShadow: '0 0 35px rgba(255,30,56,0.6)' }}>AT YOUR DOORSTEP.</span>
+                PREMIUM CAR CARE. <br/><span className="text-accent" style={{ textShadow: 'var(--accent-glow)' }}>AT YOUR DOORSTEP.</span>
               </h1>
 
               <p className="lead text-muted mb-4 pe-lg-4" style={{ fontSize: '1.15rem' }}>
-                Contactless vehicle pickup, computerized 60-point mechanical inspection, real-time estimate approval, and live status telematics. Experience dealership-grade servicing at 40% lower costs.
+                Contactless vehicle pickup, computerized 60-point mechanical inspection, real-time estimate approval, and live status telematics. Experience dealership-grade servicing with total transparency.
               </p>
 
               <div className="d-flex flex-wrap gap-3 mb-5">
-                <button className="btn-crimson btn-lg px-4 py-3" onClick={() => { setWizardStep(1); setIsBookModalOpen(true); }}>
+                <button className="btn-accent btn-lg px-4 py-3" onClick={() => { setWizardStep(1); setIsBookModalOpen(true); }}>
                   <i className="fa-solid fa-calendar-plus me-2"></i>Schedule Doorstep Pickup
                 </button>
                 <a href="#services" className="btn-glass btn-lg px-4 py-3 text-decoration-none">
@@ -318,11 +347,11 @@ function AutoProApp() {
               </div>
 
               {/* Quick Telematics Query Bar */}
-              <div className="glass-panel p-3 p-md-4 border-danger border-opacity-40" style={{ maxWidth: '600px' }}>
+              <div className="glass-panel p-3 p-md-4" style={{ maxWidth: '600px' }}>
                 <form onSubmit={(e) => { e.preventDefault(); document.getElementById('telematics').scrollIntoView({ behavior: 'smooth' }); }} className="row g-2 align-items-center">
                   <div className="col-md-8">
                     <div className="input-group">
-                      <span className="input-group-text bg-dark border-secondary text-danger"><i className="fa-solid fa-crosshairs"></i></span>
+                      <span className="input-group-text bg-dark border-secondary text-accent"><i className="fa-solid fa-crosshairs"></i></span>
                       <input 
                         type="text" 
                         className="luxury-input w-100" 
@@ -333,7 +362,7 @@ function AutoProApp() {
                     </div>
                   </div>
                   <div className="col-md-4">
-                    <button type="submit" className="btn-crimson w-100 py-2">
+                    <button type="submit" className="btn-accent w-100 py-2">
                       <i className="fa-solid fa-radar me-1"></i>Track Car
                     </button>
                   </div>
@@ -359,7 +388,7 @@ function AutoProApp() {
                 <div className="row g-2">
                   <div className="col-6">
                     <div className="kpi-card text-center">
-                      <div className="text-danger fw-bold fs-3 display-font">15,000+</div>
+                      <div className="text-accent fw-bold fs-3 display-font">15,000+</div>
                       <div className="text-muted small text-uppercase">Cars Maintained</div>
                     </div>
                   </div>
@@ -406,7 +435,7 @@ function AutoProApp() {
             ].map((p, idx) => (
               <div key={idx} className="col-md-6 col-lg-3">
                 <div className="glass-panel p-4 h-100 position-relative">
-                  <span className="badge bg-danger position-absolute top-0 end-0 m-3 display-font">{p.step}</span>
+                  <span className="badge badge-accent position-absolute top-0 end-0 m-3 display-font">{p.step}</span>
                   <div className="service-icon-box"><i className={`fa-solid ${p.icon}`}></i></div>
                   <h5 className="fw-bold text-white mb-2">{p.title}</h5>
                   <p className="text-muted small mb-0">{p.desc}</p>
@@ -432,7 +461,7 @@ function AutoProApp() {
               {['All', 'Periodic Maintenance', 'Mechanical & Electrical', 'Detailing & Wash', 'Emergency Assistance', 'Body & Paint'].map(cat => (
                 <button 
                   key={cat} 
-                  className={`btn-sm btn ${selectedCategory === cat ? 'btn-crimson' : 'btn-glass'}`}
+                  className={`btn-sm btn ${selectedCategory === cat ? 'btn-accent' : 'btn-glass'}`}
                   onClick={() => setSelectedCategory(cat)}
                 >
                   {cat}
@@ -447,11 +476,11 @@ function AutoProApp() {
                 <div className="premium-service-card">
                   <div className="d-flex justify-content-between align-items-start mb-3">
                     <div className="service-icon-box mb-0"><i className={`fa-solid ${s.icon}`}></i></div>
-                    <span className="badge bg-danger text-uppercase px-2 py-1">{s.badge}</span>
+                    <span className="badge badge-accent text-uppercase px-2 py-1">{s.badge}</span>
                   </div>
 
                   <h4 className="fw-bold text-white mb-1">{s.name}</h4>
-                  <span className="text-muted small mb-2 d-block"><i className="fa-solid fa-tag me-1 text-danger"></i>{s.category}</span>
+                  <span className="text-muted small mb-2 d-block"><i className="fa-solid fa-tag me-1 text-accent"></i>{s.category}</span>
                   <p className="text-muted small flex-grow-1 mb-3">{s.desc}</p>
 
                   <div className="d-flex justify-content-between align-items-center pt-3 border-top border-dark">
@@ -460,7 +489,7 @@ function AutoProApp() {
                       <strong className="fs-5 text-white">₹ {s.price.toLocaleString()}</strong>
                     </div>
                     <button 
-                      className="btn-crimson btn-sm px-3"
+                      className="btn-accent btn-sm px-3"
                       onClick={() => {
                         setWServices([s.id]);
                         setWizardStep(1);
@@ -492,7 +521,7 @@ function AutoProApp() {
               <div className="glass-panel p-4 p-md-5">
                 <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3 border-bottom border-dark">
                   <div>
-                    <span className="badge bg-danger fs-6 me-2">{activeBooking.reg}</span>
+                    <span className="badge badge-accent fs-6 me-2">{activeBooking.reg}</span>
                     <span className="badge bg-secondary">{activeBooking.number}</span>
                     <h3 className="fw-bold text-white mb-0 mt-2">{activeBooking.car}</h3>
                   </div>
@@ -509,8 +538,8 @@ function AutoProApp() {
                 {/* Animated Progress Bar */}
                 <div className="progress mb-4" style={{ height: '8px', backgroundColor: '#141622' }}>
                   <div 
-                    className="progress-bar bg-danger progress-bar-striped progress-bar-animated" 
-                    style={{ width: `${Math.round((activeBooking.stepIndex / 12) * 100)}%` }}
+                    className="progress-bar progress-bar-striped progress-bar-animated" 
+                    style={{ width: `${Math.round((activeBooking.stepIndex / 12) * 100)}%`, backgroundColor: 'var(--accent)' }}
                   ></div>
                 </div>
 
@@ -522,14 +551,14 @@ function AutoProApp() {
                         <strong className="text-warning d-block"><i className="fa-solid fa-hourglass-half me-1"></i> Estimate Approval Required</strong>
                         <span className="text-light small">Mechanic generated quote for parts & labor. Tap to review.</span>
                       </div>
-                      <button className="btn btn-warning btn-sm fw-bold" onClick={() => setIsEstimateModalOpen(true)}>
+                      <button className="btn btn-warning btn-sm fw-bold text-dark" onClick={() => setIsEstimateModalOpen(true)}>
                         Review & Approve
                       </button>
                     </div>
                   </div>
                 )}
 
-                <h5 className="fw-bold text-white mb-4"><i className="fa-solid fa-timeline text-danger me-2"></i>12-Stage Audit Trail</h5>
+                <h5 className="fw-bold text-white mb-4"><i className="fa-solid fa-timeline text-accent me-2"></i>12-Stage Audit Trail</h5>
 
                 <div className="luxury-stepper">
                   {STATUS_PIPELINE.map((st, idx) => {
@@ -544,11 +573,11 @@ function AutoProApp() {
                           {isDone ? <i className="fa-solid fa-check"></i> : (isCur ? <i className="fa-solid fa-gear fa-spin"></i> : stepNum)}
                         </div>
                         <div className="ms-2">
-                          <h6 className={`fw-bold mb-1 ${isCur ? 'text-danger' : (isDone ? 'text-white' : 'text-muted')}`}>
+                          <h6 className={`fw-bold mb-1 ${isCur ? 'text-accent' : (isDone ? 'text-white' : 'text-muted')}`}>
                             {stepNum}. {st}
                           </h6>
                           {isCur && (
-                            <p className="text-danger small mb-0"><i className="fa-solid fa-circle-dot me-1"></i> {activeBooking.remarks}</p>
+                            <p className="text-accent small mb-0"><i className="fa-solid fa-circle-dot me-1"></i> {activeBooking.remarks}</p>
                           )}
                         </div>
                       </div>
@@ -562,7 +591,7 @@ function AutoProApp() {
             <div className="col-lg-5">
               <div className="glass-panel p-4 mb-4">
                 <h5 className="fw-bold text-white mb-3 border-bottom border-dark pb-2">
-                  <i className="fa-solid fa-user-shield text-danger me-2"></i>Assigned Workshop Crew
+                  <i className="fa-solid fa-user-shield text-accent me-2"></i>Assigned Workshop Crew
                 </h5>
                 <div className="p-3 rounded bg-surface border border-secondary mb-3 small">
                   <small className="text-muted text-uppercase d-block" style={{ fontSize: '0.75rem' }}>Doorstep Driver</small>
@@ -576,7 +605,7 @@ function AutoProApp() {
 
               <div className="glass-panel p-4 mb-4">
                 <h5 className="fw-bold text-white mb-3 border-bottom border-dark pb-2">
-                  <i className="fa-solid fa-gauge-high text-danger me-2"></i>Vehicle Telematics
+                  <i className="fa-solid fa-gauge-high text-accent me-2"></i>Vehicle Telematics
                 </h5>
                 <div className="row g-2 small text-muted">
                   <div className="col-6">Odometer: <strong className="text-white">{activeBooking.odometer.toLocaleString()} KM</strong></div>
@@ -588,7 +617,7 @@ function AutoProApp() {
 
               <div className="glass-panel p-4">
                 <h5 className="fw-bold text-white mb-3 border-bottom border-dark pb-2">
-                  <i className="fa-solid fa-file-invoice text-danger me-2"></i>Invoice Breakdown
+                  <i className="fa-solid fa-file-invoice text-accent me-2"></i>Invoice Breakdown
                 </h5>
                 <div className="d-flex justify-content-between small text-muted mb-2">
                   <span>Subtotal Labor & Parts:</span>
@@ -600,14 +629,14 @@ function AutoProApp() {
                 </div>
                 <div className="d-flex justify-content-between fs-4 fw-bold text-white pt-2 border-top border-dark mb-3">
                   <span>Total Amount:</span>
-                  <span className="text-danger">₹ {activeBooking.total.toFixed(2)}</span>
+                  <span className="text-accent">₹ {activeBooking.total.toFixed(2)}</span>
                 </div>
                 <div className="d-grid gap-2">
                   <button className="btn-glass btn-sm" onClick={() => setIsInvoiceModalOpen(true)}>
                     <i className="fa-solid fa-print me-1"></i>View & Print Tax Invoice
                   </button>
                   {activeBooking.paymentStatus !== 'Paid' && (
-                    <button className="btn-crimson btn-sm" onClick={() => {
+                    <button className="btn-accent btn-sm" onClick={() => {
                       const updated = bookings.map(b => b.number === activeBooking.number ? { ...b, paymentStatus: 'Paid' } : b);
                       setBookings(updated);
                       showToast('Payment of ₹ ' + activeBooking.total.toFixed(2) + ' completed via Razorpay!');
@@ -628,21 +657,21 @@ function AutoProApp() {
           <div className="modal-dialog modal-lg modal-dialog-centered">
             <div className="modal-content luxury-modal p-4 text-light">
               <div className="d-flex justify-content-between align-items-center border-bottom border-dark pb-3 mb-4">
-                <h4 className="fw-bold text-white mb-0"><i className="fa-solid fa-calendar-check text-danger me-2"></i>Book Car Servicing Pickup</h4>
+                <h4 className="fw-bold text-white mb-0"><i className="fa-solid fa-calendar-check text-accent me-2"></i>Book Car Servicing Pickup</h4>
                 <button className="btn-close btn-close-white" onClick={() => setIsBookModalOpen(false)}></button>
               </div>
 
               {/* Wizard Steps Header */}
               <div className="d-flex justify-content-between mb-4 pb-2 border-bottom border-dark small">
-                <span className={`fw-bold ${wizardStep === 1 ? 'text-danger' : 'text-muted'}`}>1. Vehicle</span>
-                <span className={`fw-bold ${wizardStep === 2 ? 'text-danger' : 'text-muted'}`}>2. Services</span>
-                <span className={`fw-bold ${wizardStep === 3 ? 'text-danger' : 'text-muted'}`}>3. Schedule</span>
-                <span className={`fw-bold ${wizardStep === 4 ? 'text-danger' : 'text-muted'}`}>4. Confirm</span>
+                <span className={`fw-bold ${wizardStep === 1 ? 'text-accent' : 'text-muted'}`}>1. Vehicle</span>
+                <span className={`fw-bold ${wizardStep === 2 ? 'text-accent' : 'text-muted'}`}>2. Services</span>
+                <span className={`fw-bold ${wizardStep === 3 ? 'text-accent' : 'text-muted'}`}>3. Schedule</span>
+                <span className={`fw-bold ${wizardStep === 4 ? 'text-accent' : 'text-muted'}`}>4. Confirm</span>
               </div>
 
               {wizardStep === 1 && (
                 <div>
-                  <h6 className="fw-bold text-danger text-uppercase mb-3">Vehicle Information</h6>
+                  <h6 className="fw-bold text-accent text-uppercase mb-3">Vehicle Information</h6>
                   <div className="row g-3 mb-4">
                     <div className="col-md-6">
                       <label className="small text-muted mb-1">Make & Model *</label>
@@ -660,20 +689,20 @@ function AutoProApp() {
                     </div>
                   </div>
                   <div className="d-flex justify-content-end">
-                    <button className="btn-crimson" onClick={() => setWizardStep(2)}>Next: Select Services &rarr;</button>
+                    <button className="btn-accent" onClick={() => setWizardStep(2)}>Next: Select Services &rarr;</button>
                   </div>
                 </div>
               )}
 
               {wizardStep === 2 && (
                 <div>
-                  <h6 className="fw-bold text-danger text-uppercase mb-3">Select Services Needed</h6>
+                  <h6 className="fw-bold text-accent text-uppercase mb-3">Select Services Needed</h6>
                   <div className="row g-2 mb-4" style={{ maxHeight: '300px', overflowY: 'auto' }}>
                     {INITIAL_SERVICES.map(s => {
                       const isSel = wServices.includes(s.id);
                       return (
                         <div key={s.id} className="col-md-6">
-                          <label className={`p-2 rounded border d-flex justify-content-between align-items-center cursor-pointer ${isSel ? 'border-danger bg-danger bg-opacity-10' : 'border-secondary bg-surface'}`}>
+                          <label className={`p-2 rounded border d-flex justify-content-between align-items-center cursor-pointer ${isSel ? 'border-warning bg-warning bg-opacity-10' : 'border-secondary bg-surface'}`}>
                             <span>
                               <input 
                                 type="checkbox" 
@@ -686,7 +715,7 @@ function AutoProApp() {
                               />
                               <strong className="text-white small">{s.name}</strong>
                             </span>
-                            <span className="text-danger fw-bold small">₹ {s.price}</span>
+                            <span className="text-accent fw-bold small">₹ {s.price}</span>
                           </label>
                         </div>
                       );
@@ -694,14 +723,14 @@ function AutoProApp() {
                   </div>
                   <div className="d-flex justify-content-between align-items-center">
                     <button className="btn-glass" onClick={() => setWizardStep(1)}>&larr; Back</button>
-                    <button className="btn-crimson" onClick={() => setWizardStep(3)}>Next: Pickup Details &rarr;</button>
+                    <button className="btn-accent" onClick={() => setWizardStep(3)}>Next: Pickup Details &rarr;</button>
                   </div>
                 </div>
               )}
 
               {wizardStep === 3 && (
                 <div>
-                  <h6 className="fw-bold text-danger text-uppercase mb-3">Doorstep Pickup Details</h6>
+                  <h6 className="fw-bold text-accent text-uppercase mb-3">Doorstep Pickup Details</h6>
                   <div className="row g-3 mb-4">
                     <div className="col-md-6">
                       <label className="small text-muted mb-1">Preferred Date *</label>
@@ -722,14 +751,14 @@ function AutoProApp() {
                   </div>
                   <div className="d-flex justify-content-between align-items-center">
                     <button className="btn-glass" onClick={() => setWizardStep(2)}>&larr; Back</button>
-                    <button className="btn-crimson" onClick={() => setWizardStep(4)}>Review & Confirm &rarr;</button>
+                    <button className="btn-accent" onClick={() => setWizardStep(4)}>Review & Confirm &rarr;</button>
                   </div>
                 </div>
               )}
 
               {wizardStep === 4 && (
                 <div>
-                  <h6 className="fw-bold text-danger text-uppercase mb-3">Review & Schedule</h6>
+                  <h6 className="fw-bold text-accent text-uppercase mb-3">Review & Schedule</h6>
                   <div className="kpi-card mb-3">
                     <div className="d-flex justify-content-between mb-2">
                       <span className="text-muted">Vehicle:</span>
@@ -746,12 +775,12 @@ function AutoProApp() {
                     <hr className="border-secondary my-2"/>
                     <div className="d-flex justify-content-between fs-5 fw-bold">
                       <span className="text-white">Estimated Total:</span>
-                      <span className="text-danger">₹ {wizardTotals.grand.toFixed(2)}</span>
+                      <span className="text-accent">₹ {wizardTotals.grand.toFixed(2)}</span>
                     </div>
                   </div>
                   <div className="d-flex justify-content-between align-items-center">
                     <button className="btn-glass" onClick={() => setWizardStep(3)}>&larr; Back</button>
-                    <button className="btn-crimson btn-lg px-4" onClick={handleCreateBooking}>
+                    <button className="btn-accent btn-lg px-4" onClick={handleCreateBooking}>
                       <i className="fa-solid fa-circle-check me-2"></i>Confirm Booking
                     </button>
                   </div>
@@ -768,7 +797,7 @@ function AutoProApp() {
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content luxury-modal p-4 text-light">
               <div className="d-flex justify-content-between align-items-center border-bottom border-dark pb-3 mb-3">
-                <h5 className="fw-bold text-white mb-0"><i className="fa-solid fa-receipt text-danger me-2"></i>Technician Service Quotation</h5>
+                <h5 className="fw-bold text-white mb-0"><i className="fa-solid fa-receipt text-accent me-2"></i>Technician Service Quotation</h5>
                 <button className="btn-close btn-close-white" onClick={() => setIsEstimateModalOpen(false)}></button>
               </div>
 
@@ -786,7 +815,7 @@ function AutoProApp() {
                   <strong>₹ {((activeBooking.estimate.parts + activeBooking.estimate.labor) * 0.18).toFixed(2)}</strong>
                 </div>
                 <hr className="border-secondary my-2"/>
-                <div className="d-flex justify-content-between fs-5 fw-bold text-danger">
+                <div className="d-flex justify-content-between fs-5 fw-bold text-accent">
                   <span>Grand Total:</span>
                   <strong>₹ {((activeBooking.estimate.parts + activeBooking.estimate.labor) * 1.18).toFixed(2)}</strong>
                 </div>
@@ -800,7 +829,7 @@ function AutoProApp() {
                 <button className="btn btn-outline-danger flex-grow-1" onClick={() => handleApproveEstimate(false)}>
                   Request Changes
                 </button>
-                <button className="btn-crimson flex-grow-1" onClick={() => handleApproveEstimate(true)}>
+                <button className="btn-accent flex-grow-1" onClick={() => handleApproveEstimate(true)}>
                   Approve & Begin Repairs
                 </button>
               </div>
@@ -829,15 +858,15 @@ function AutoProApp() {
 
               <div className="row g-3 mb-4 small">
                 <div className="col-6">
-                  <strong className="text-danger text-uppercase d-block mb-1">Customer Details</strong>
+                  <strong className="text-accent text-uppercase d-block mb-1">Customer Details</strong>
                   <div className="text-white fw-bold">{activeBooking.customer}</div>
                   <div className="text-muted">{activeBooking.phone}</div>
                   <div className="text-muted">{activeBooking.address}</div>
                 </div>
                 <div className="col-6 text-end">
-                  <strong className="text-danger text-uppercase d-block mb-1">Vehicle Details</strong>
+                  <strong className="text-accent text-uppercase d-block mb-1">Vehicle Details</strong>
                   <div className="text-white fw-bold">{activeBooking.car}</div>
-                  <span className="badge bg-danger">{activeBooking.reg}</span>
+                  <span className="badge badge-accent">{activeBooking.reg}</span>
                   <div className="text-muted mt-1">Odometer: {activeBooking.odometer.toLocaleString()} KM</div>
                 </div>
               </div>
@@ -858,12 +887,12 @@ function AutoProApp() {
               <div className="kpi-card mb-4 ms-auto" style={{ maxWidth: '350px' }}>
                 <div className="d-flex justify-content-between small mb-1"><span>Subtotal:</span><strong>₹ {activeBooking.subtotal.toFixed(2)}</strong></div>
                 <div className="d-flex justify-content-between small mb-1"><span>GST (18%):</span><strong>₹ {activeBooking.tax.toFixed(2)}</strong></div>
-                <div className="d-flex justify-content-between fs-5 fw-bold text-danger border-top border-dark pt-1"><span>Total:</span><strong>₹ {activeBooking.total.toFixed(2)}</strong></div>
+                <div className="d-flex justify-content-between fs-5 fw-bold text-accent border-top border-dark pt-1"><span>Total:</span><strong>₹ {activeBooking.total.toFixed(2)}</strong></div>
               </div>
 
               <div className="d-flex justify-content-between">
                 <button className="btn-glass" onClick={() => setIsInvoiceModalOpen(false)}>Close</button>
-                <button className="btn-crimson" onClick={() => window.print()}><i className="fa-solid fa-print me-1"></i>Print PDF</button>
+                <button className="btn-accent" onClick={() => window.print()}><i className="fa-solid fa-print me-1"></i>Print PDF</button>
               </div>
             </div>
           </div>
@@ -876,7 +905,7 @@ function AutoProApp() {
           <div className="modal-dialog modal-xl modal-dialog-centered">
             <div className="modal-content luxury-modal p-4 text-light">
               <div className="d-flex justify-content-between align-items-center border-bottom border-dark pb-3 mb-4">
-                <h4 className="fw-bold text-white mb-0"><i className="fa-solid fa-gauge-high text-danger me-2"></i>AutoPro Role Portals Command Center</h4>
+                <h4 className="fw-bold text-white mb-0"><i className="fa-solid fa-gauge-high text-accent me-2"></i>AutoPro Role Portals Command Center</h4>
                 <button className="btn-close btn-close-white" onClick={() => setIsPortalModalOpen(false)}></button>
               </div>
 
@@ -890,7 +919,7 @@ function AutoProApp() {
                 ].map(tab => (
                   <button 
                     key={tab.id}
-                    className={`btn btn-sm ${portalTab === tab.id ? 'btn-crimson' : 'btn-glass'}`}
+                    className={`btn btn-sm ${portalTab === tab.id ? 'btn-accent' : 'btn-glass'}`}
                     onClick={() => setPortalTab(tab.id)}
                   >
                     <i className={`fa-solid ${tab.icon} me-1`}></i>{tab.name}
@@ -905,7 +934,7 @@ function AutoProApp() {
                     <div className="col-3"><div className="kpi-card text-center"><div className="fs-3 fw-bold text-white">{bookings.length}</div><small className="text-muted">My Vehicles</small></div></div>
                     <div className="col-3"><div className="kpi-card text-center"><div className="fs-3 fw-bold text-warning">{bookings.filter(b=>b.status!=='Delivered').length}</div><small className="text-muted">Active</small></div></div>
                     <div className="col-3"><div className="kpi-card text-center"><div className="fs-3 fw-bold text-success">{bookings.filter(b=>b.status==='Delivered').length}</div><small className="text-muted">Completed</small></div></div>
-                    <div className="col-3"><div className="kpi-card text-center"><div className="fs-4 fw-bold text-danger">₹ {bookings.reduce((a,c)=>a+c.total,0).toFixed(0)}</div><small className="text-muted">Total Spent</small></div></div>
+                    <div className="col-3"><div className="kpi-card text-center"><div className="fs-4 fw-bold text-accent">₹ {bookings.reduce((a,c)=>a+c.total,0).toFixed(0)}</div><small className="text-muted">Total Spent</small></div></div>
                   </div>
                   <div className="table-responsive">
                     <table className="table table-dark-custom">
@@ -919,7 +948,7 @@ function AutoProApp() {
                             <td className="fw-bold text-white">₹ {b.total.toFixed(2)}</td>
                             <td><span className={`badge bg-${b.paymentStatus==='Paid'?'success':'danger'}`}>{b.paymentStatus}</span></td>
                             <td>
-                              <button className="btn btn-crimson btn-sm py-1" onClick={() => { setActiveTrackingQuery(b.number); setIsPortalModalOpen(false); document.getElementById('telematics').scrollIntoView({ behavior: 'smooth' }); }}>
+                              <button className="btn-accent btn-sm py-1" onClick={() => { setActiveTrackingQuery(b.number); setIsPortalModalOpen(false); document.getElementById('telematics').scrollIntoView({ behavior: 'smooth' }); }}>
                                 Track Live
                               </button>
                             </td>
@@ -936,7 +965,7 @@ function AutoProApp() {
                 <div>
                   <div className="d-flex justify-content-between align-items-center mb-3">
                     <h6 className="fw-bold text-white mb-0">12-Stage Booking Dispatch Controller</h6>
-                    <span className="badge bg-danger">Full Control Active</span>
+                    <span className="badge badge-accent">Full Control Active</span>
                   </div>
                   <div className="table-responsive">
                     <table className="table table-dark-custom">
@@ -975,11 +1004,11 @@ function AutoProApp() {
                     <div key={b.number} className="kpi-card mb-3">
                       <div className="d-flex justify-content-between align-items-center mb-2">
                         <strong className="text-white fs-6">{b.car} ({b.reg})</strong>
-                        <span className="badge bg-danger">{b.status}</span>
+                        <span className="badge badge-accent">{b.status}</span>
                       </div>
-                      <div className="small text-muted mb-2"><i className="fa-solid fa-location-dot text-danger me-1"></i>{b.address}</div>
+                      <div className="small text-muted mb-2"><i className="fa-solid fa-location-dot text-accent me-1"></i>{b.address}</div>
                       <div className="d-flex gap-2">
-                        <button className="btn btn-sm btn-crimson" onClick={() => { handleAdminUpdateStatus(b.number, 'Vehicle Picked Up'); }}>
+                        <button className="btn btn-sm btn-accent" onClick={() => { handleAdminUpdateStatus(b.number, 'Vehicle Picked Up'); }}>
                           Mark Picked Up from Doorstep
                         </button>
                         <button className="btn btn-sm btn-glass" onClick={() => { handleAdminUpdateStatus(b.number, 'Vehicle Received at Workshop'); }}>
@@ -1006,7 +1035,7 @@ function AutoProApp() {
                         <button className="btn btn-sm btn-glass" onClick={() => { handleAdminUpdateStatus(b.number, 'Inspection in Progress'); }}>
                           Start 60-Point Inspection
                         </button>
-                        <button className="btn btn-sm btn-crimson" onClick={() => { handleAdminUpdateStatus(b.number, 'Service Completed'); }}>
+                        <button className="btn btn-sm btn-accent" onClick={() => { handleAdminUpdateStatus(b.number, 'Service Completed'); }}>
                           Mark Service Completed
                         </button>
                       </div>
@@ -1035,7 +1064,7 @@ function AutoProApp() {
             <div className="col-lg-4 col-6">
               <h6 className="footer-title">Official Repository</h6>
               <p className="small text-muted mb-2">Full-stack source code with 17 MySQL tables, Dockerfile, and container configs.</p>
-              <a href="https://github.com/Harry778844/car-servicing-platform" className="btn-crimson btn-sm text-decoration-none d-inline-block" target="_blank">
+              <a href="https://github.com/Harry778844/car-servicing-platform" className="btn-accent btn-sm text-decoration-none d-inline-block" target="_blank">
                 <i className="fa-brands fa-github me-1"></i>View on GitHub
               </a>
             </div>

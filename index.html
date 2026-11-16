@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoPro - Doorstep Car Servicing & Maintenance Platform</title>
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6.5 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom Theme -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .hero-badge-glow {
+            box-shadow: 0 0 20px rgba(255, 42, 58, 0.4);
+        }
+        .live-tag-pulse {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #10b981;
+            border-radius: 50%;
+            margin-right: 6px;
+            animation: pulse-dot 1.5s infinite;
+        }
+        @keyframes pulse-dot {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Top Hotline Bar -->
+<div class="bg-black py-1 border-bottom border-dark small text-muted">
+    <div class="container d-flex justify-content-between align-items-center">
+        <div>
+            <span class="text-white me-3"><i class="fa-solid fa-phone text-danger me-1"></i> 24x7 Breakdown Hotline: <a href="tel:+918004567890" class="text-white fw-bold">+91 (800) 456-7890</a></span>
+            <span class="d-none d-md-inline"><i class="fa-solid fa-truck-pickup text-danger me-1"></i> Complimentary Doorstep Pickup & Drop</span>
+        </div>
+        <div>
+            <span class="badge bg-success bg-opacity-25 text-success border border-success me-2">
+                <span class="live-tag-pulse"></span>Live Platform
+            </span>
+            <a href="#tracker-section" class="text-muted hover-red"><i class="fa-solid fa-crosshairs text-danger me-1"></i> Track Car</a>
+        </div>
+    </div>
+</div>
+
+<!-- Main Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="index.html">
+            <i class="fa-solid fa-car-tunnel"></i> AUTO<span>PRO</span>
+        </a>
+        
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNavbar">
+            <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="#services-section">Services</a></li>
+                <li class="nav-item"><a class="nav-link" href="#process-section">How It Works</a></li>
+                <li class="nav-item"><a class="nav-link" href="#tracker-section">Live Tracker</a></li>
+                <li class="nav-item"><a class="nav-link" href="#portals-section">Role Portals</a></li>
+                <li class="nav-item"><a class="nav-link" href="#contact-section">Contact</a></li>
+            </ul>
+
+            <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-outline-red btn-sm px-3" data-bs-toggle="modal" data-bs-target="#portalModal">
+                    <i class="fa-solid fa-gauge-high me-1"></i> Portals Demo
+                </button>
+                <button type="button" class="btn btn-red btn-sm px-3" data-bs-toggle="modal" data-bs-target="#bookServiceModal">
+                    <i class="fa-solid fa-calendar-plus me-1"></i> Book Pickup
+                </button>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-7">
+                <span class="hero-tag mb-3 hero-badge-glow"><i class="fa-solid fa-shield-halved me-2"></i>Certified Multi-Brand Workshop Network</span>
+                <h1 class="hero-title text-white mb-3">
+                    PREMIUM CAR CARE, <br><span class="text-danger">RIGHT AT YOUR DOORSTEP.</span>
+                </h1>
+                <p class="lead text-muted mb-4 pe-lg-4">
+                    Book routine car maintenance, engine diagnostics or emergency roadside assistance in seconds. We pick up your vehicle, service it with genuine OEM spares, share transparent digital inspection photos, and drop it back sparkling clean.
+                </p>
+
+                <div class="d-flex flex-wrap gap-3 mb-5">
+                    <button type="button" class="btn btn-red btn-lg px-4 py-3" data-bs-toggle="modal" data-bs-target="#bookServiceModal">
+                        <i class="fa-solid fa-calendar-check me-2"></i>Schedule Doorstep Pickup
+                    </button>
+                    <a href="#services-section" class="btn btn-outline-red btn-lg px-4 py-3">
+                        <i class="fa-solid fa-list-check me-2"></i>Explore 10 Services
+                    </a>
+                </div>
+
+                <!-- Live Quick Tracking Bar -->
+                <div class="card-dark p-3 p-md-4 border-danger border-opacity-50">
+                    <form onsubmit="handleTrackSearch(event)" class="row g-2 align-items-center">
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark border-secondary text-danger"><i class="fa-solid fa-crosshairs"></i></span>
+                                <input type="text" id="heroTrackInput" class="form-control form-control-dark" placeholder="Enter Booking Ref (e.g. BK-2026-001) or Reg No." value="BK-2026-001" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-danger w-100 py-2">
+                                <i class="fa-solid fa-radar me-1"></i> Track Live
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-lg-5 text-center position-relative">
+                <div class="p-4 rounded-4 card-dark border-secondary shadow-lg">
+                    <img src="https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&w=800&q=80" alt="Car Servicing Workshop" class="img-fluid rounded-3 mb-4 shadow" style="object-fit:cover; max-height: 280px; width: 100%;">
+                    
+                    <div class="row g-2 text-start">
+                        <div class="col-6">
+                            <div class="p-2 rounded bg-surface border border-dark">
+                                <div class="text-danger fw-bold fs-4">15,000+</div>
+                                <div class="text-muted small">Vehicles Serviced</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 rounded bg-surface border border-dark">
+                                <div class="text-warning fw-bold fs-4"><i class="fa-solid fa-star me-1"></i>4.9 / 5</div>
+                                <div class="text-muted small">Customer Rating</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 rounded bg-surface border border-dark">
+                                <div class="text-info fw-bold fs-4">100%</div>
+                                <div class="text-muted small">OEM Spares Used</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 rounded bg-surface border border-dark">
+                                <div class="text-success fw-bold fs-4">6 Months</div>
+                                <div class="text-muted small">Service Warranty</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 4-Step Process Section -->
+<section class="py-5 bg-black border-bottom border-dark" id="process-section">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <span class="hero-tag mb-2">Digitized Workflow</span>
+            <h2 class="fw-bold fs-1">HOW AUTOPRO WORKS</h2>
+            <p class="text-muted">Effortless, contactless car care with total visibility at every turn</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6 text-center">
+                <div class="card-dark p-4 h-100 position-relative">
+                    <div class="service-icon-wrap mx-auto"><i class="fa-solid fa-calendar-day"></i></div>
+                    <span class="badge bg-danger rounded-pill position-absolute top-0 end-0 m-3">Step 1</span>
+                    <h5 class="fw-bold mb-2 text-white">Book Online</h5>
+                    <p class="text-muted small mb-0">Select car details, choose required services, and schedule a convenient doorstep pickup slot.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 text-center">
+                <div class="card-dark p-4 h-100 position-relative">
+                    <div class="service-icon-wrap mx-auto"><i class="fa-solid fa-truck-pickup"></i></div>
+                    <span class="badge bg-danger rounded-pill position-absolute top-0 end-0 m-3">Step 2</span>
+                    <h5 class="fw-bold mb-2 text-white">Doorstep Pickup</h5>
+                    <p class="text-muted small mb-0">Our verified executive inspects the vehicle at your doorstep, notes odometer/fuel, and drives to hub.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 text-center">
+                <div class="card-dark p-4 h-100 position-relative">
+                    <div class="service-icon-wrap mx-auto"><i class="fa-solid fa-clipboard-check"></i></div>
+                    <span class="badge bg-danger rounded-pill position-absolute top-0 end-0 m-3">Step 3</span>
+                    <h5 class="fw-bold mb-2 text-white">Inspection & Approval</h5>
+                    <p class="text-muted small mb-0">Master technician performs a 60-point digital inspection. You review the estimate and approve online.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 text-center">
+                <div class="card-dark p-4 h-100 position-relative">
+                    <div class="service-icon-wrap mx-auto"><i class="fa-solid fa-car-side"></i></div>
+                    <span class="badge bg-danger rounded-pill position-absolute top-0 end-0 m-3">Step 4</span>
+                    <h5 class="fw-bold mb-2 text-white">Drop-off & Payment</h5>
+                    <p class="text-muted small mb-0">Vehicle serviced, quality-tested, washed and delivered back. Pay seamlessly via Razorpay or Cash.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Catalog Grid -->
+<section class="py-5" id="services-section">
+    <div class="container py-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-5">
+            <div>
+                <span class="hero-tag mb-2">Core Services</span>
+                <h2 class="fw-bold fs-1 text-white">SERVICES WE OFFER</h2>
+                <p class="text-muted mb-0">Comprehensive mechanical, electrical, periodic maintenance and bodywork services.</p>
+            </div>
+            <button type="button" class="btn btn-outline-red mt-3 mt-md-0" data-bs-toggle="modal" data-bs-target="#bookServiceModal">
+                Book Any Service <i class="fa-solid fa-arrow-right ms-1"></i>
+            </button>
+        </div>
+
+        <div class="row g-4" id="servicesGrid">
+            <!-- Dynamically populated via JavaScript for all 10 services -->
+        </div>
+    </div>
+</section>
+
+<!-- 12-Stage Live Telematics Tracker Section -->
+<section class="py-5 bg-black border-top border-bottom border-dark" id="tracker-section">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <span class="hero-tag mb-2"><i class="fa-solid fa-radar me-1"></i> Live Workshop Telematics</span>
+            <h2 class="fw-bold fs-1 text-white">12-STAGE VEHICLE TRACKER</h2>
+            <p class="text-muted">Track every single milestone of your vehicle servicing in real-time</p>
+        </div>
+
+        <div class="row justify-content-center mb-4">
+            <div class="col-lg-8">
+                <div class="card-dark p-3">
+                    <div class="row g-2">
+                        <div class="col-md-8">
+                            <input type="text" id="trackerInput" class="form-control form-control-dark" placeholder="Enter Booking ID (e.g. BK-2026-001) or Reg No." value="BK-2026-001">
+                        </div>
+                        <div class="col-md-4">
+                            <button type="button" class="btn btn-red w-100" onclick="renderTracker()">
+                                <i class="fa-solid fa-magnifying-glass me-1"></i> Track Status
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4" id="trackerDisplayArea">
+            <!-- Dynamic tracker populated by JS -->
+        </div>
+    </div>
+</section>
+
+<!-- Role Portals Showcase Section -->
+<section class="py-5" id="portals-section">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <span class="hero-tag mb-2">Multi-Role Architecture</span>
+            <h2 class="fw-bold fs-1 text-white">4 SPECIALIZED WORKSPACE PORTALS</h2>
+            <p class="text-muted">Experience the tailored management interfaces designed for each stakeholder</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="card-dark p-4 h-100 text-center border-danger border-opacity-25">
+                    <div class="service-icon-wrap mx-auto"><i class="fa-solid fa-user"></i></div>
+                    <h5 class="fw-bold text-white mb-2">Customer Portal</h5>
+                    <p class="text-muted small mb-3">Manage garage fleet, view live 12-stage status, approve itemized estimates, and pay invoices.</p>
+                    <button class="btn btn-outline-danger btn-sm w-100" onclick="showPortalPreview('customer')">Explore Customer View</button>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card-dark p-4 h-100 text-center border-danger border-opacity-25">
+                    <div class="service-icon-wrap mx-auto"><i class="fa-solid fa-shield-halved"></i></div>
+                    <h5 class="fw-bold text-white mb-2">Admin Command</h5>
+                    <p class="text-muted small mb-3">Revenue metrics, booking pipeline, assign pickup drivers and workshop technicians.</p>
+                    <button class="btn btn-outline-danger btn-sm w-100" onclick="showPortalPreview('admin')">Explore Admin View</button>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card-dark p-4 h-100 text-center border-danger border-opacity-25">
+                    <div class="service-icon-wrap mx-auto"><i class="fa-solid fa-truck-pickup"></i></div>
+                    <h5 class="fw-bold text-white mb-2">Pickup Executive</h5>
+                    <p class="text-muted small mb-3">Route assignments, doorstep vehicle inspection, odometer logging, and handover signoffs.</p>
+                    <button class="btn btn-outline-danger btn-sm w-100" onclick="showPortalPreview('pickup')">Explore Driver View</button>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card-dark p-4 h-100 text-center border-danger border-opacity-25">
+                    <div class="service-icon-wrap mx-auto"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                    <h5 class="fw-bold text-white mb-2">Technician Bay</h5>
+                    <p class="text-muted small mb-3">60-point mechanical checklists, formulate parts + labor estimates, and log repairs.</p>
+                    <button class="btn btn-outline-danger btn-sm w-100" onclick="showPortalPreview('tech')">Explore Tech Bay View</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact & Hotline Section -->
+<section class="py-5 bg-black border-top border-dark" id="contact-section">
+    <div class="container py-4">
+        <div class="row g-5 align-items-center">
+            <div class="col-lg-6">
+                <span class="hero-tag mb-2">Support & Assistance</span>
+                <h2 class="fw-bold text-white mb-3">GET IN TOUCH WITH AUTOPRO</h2>
+                <p class="text-muted mb-4">Have questions about service packages, custom performance tuning, or emergency towing assistance?</p>
+                
+                <div class="mb-3 d-flex align-items-center gap-3">
+                    <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center" style="width:45px;height:45px;"><i class="fa-solid fa-phone"></i></div>
+                    <div>
+                        <small class="text-muted d-block">24x7 Customer Helpline</small>
+                        <a href="tel:+918004567890" class="text-white fw-bold fs-5">+91 (800) 456-7890</a>
+                    </div>
+                </div>
+
+                <div class="mb-3 d-flex align-items-center gap-3">
+                    <div class="rounded-circle bg-dark border border-secondary text-danger d-flex align-items-center justify-content-center" style="width:45px;height:45px;"><i class="fa-solid fa-location-dot"></i></div>
+                    <div>
+                        <small class="text-muted d-block">Workshop Central</small>
+                        <span class="text-white">AutoPro Towers, Tech Corridor, Gurugram, HR 122003</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card-dark p-4 p-md-5">
+                    <h4 class="fw-bold text-white mb-3">Send Quick Message</h4>
+                    <form onsubmit="handleContact(event)">
+                        <div class="mb-3">
+                            <input type="text" class="form-control form-control-dark" placeholder="Your Name" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="email" class="form-control form-control-dark" placeholder="Email Address" required>
+                        </div>
+                        <div class="mb-3">
+                            <textarea class="form-control form-control-dark" rows="3" placeholder="How can we assist you?" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-red w-100">Send Enquiry</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="site-footer">
+    <div class="container">
+        <div class="row g-4 mb-4">
+            <div class="col-lg-4">
+                <h3 class="fw-bold text-white brand-font mb-2"><i class="fa-solid fa-car-tunnel text-danger me-2"></i>AUTO<span class="text-danger">PRO</span></h3>
+                <p class="text-muted small">India's premier multi-brand car servicing network with contactless doorstep pickup & drop, real-time tracking, transparent estimates, and ASE-certified workshop technicians.</p>
+            </div>
+            <div class="col-lg-4 col-6">
+                <h6 class="footer-title">Quick Navigation</h6>
+                <ul class="footer-links">
+                    <li><a href="#services-section">Services Catalog</a></li>
+                    <li><a href="#tracker-section">Live 12-Stage Tracker</a></li>
+                    <li><a href="#process-section">How It Works</a></li>
+                    <li><a href="#contact-section">Support & Workshop Hours</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-4 col-6">
+                <h6 class="footer-title">Workshop Hours</h6>
+                <p class="text-muted small mb-1"><i class="fa-solid fa-clock text-warning me-2"></i>Mon - Sun: 08:00 AM - 08:00 PM</p>
+                <p class="text-muted small"><i class="fa-solid fa-shield-check text-success me-2"></i>6 Months / 10,000 KM Warranty</p>
+                <a href="https://github.com/Harry778844/car-servicing-platform" class="btn btn-dark-surface btn-sm text-light mt-2" target="_blank">
+                    <i class="fa-brands fa-github me-1"></i> View GitHub Repository
+                </a>
+            </div>
+        </div>
+        <hr class="border-secondary my-3">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center small text-muted">
+            <p class="mb-0">&copy; 2026 AutoPro Car Care. Published on GitHub Pages.</p>
+            <div>
+                <a href="https://github.com/Harry778844/car-servicing-platform" class="text-muted me-3">GitHub Repo</a>
+                <a href="database/schema.sql" class="text-muted">Database Schema (17 Tables)</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- MODAL: BOOK SERVICE WIZARD -->
+<div class="modal fade" id="bookServiceModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content card-dark border-secondary">
+            <div class="modal-header border-dark">
+                <h5 class="modal-title text-white fw-bold"><i class="fa-solid fa-calendar-plus text-danger me-2"></i>Schedule Doorstep Car Servicing</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4 text-light">
+                <form id="wizardModalForm" onsubmit="handleBookSubmit(event)">
+                    <!-- Step 1: Vehicle -->
+                    <h6 class="text-danger fw-bold text-uppercase small mb-2">1. Vehicle Details</h6>
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <input type="text" id="bMakeModel" class="form-control form-control-dark" placeholder="Make & Model (e.g. Hyundai Creta, Honda City)" required value="Hyundai Creta SX (O)">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" id="bReg" class="form-control form-control-dark" placeholder="Reg Number" required value="HR 26 DQ 8899">
+                        </div>
+                        <div class="col-md-3">
+                            <select id="bFuel" class="form-select form-select-dark">
+                                <option>Petrol</option><option selected>Diesel</option><option>Electric</option><option>CNG</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Select Services -->
+                    <h6 class="text-danger fw-bold text-uppercase small mb-2">2. Choose Required Services</h6>
+                    <div class="row g-2 mb-3" id="wizardServicesSelection">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <!-- Step 3: Pickup Schedule -->
+                    <h6 class="text-danger fw-bold text-uppercase small mb-2">3. Pickup Schedule & Location</h6>
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <input type="date" id="bDate" class="form-control form-control-dark" required>
+                        </div>
+                        <div class="col-md-6">
+                            <select id="bTime" class="form-select form-select-dark">
+                                <option>09:00 AM - 11:00 AM (Morning)</option>
+                                <option selected>11:00 AM - 01:00 PM (Mid-day)</option>
+                                <option>02:00 PM - 04:00 PM (Afternoon)</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <input type="text" id="bAddress" class="form-control form-control-dark" placeholder="Doorstep Address (Flat, Street, City)" required value="Flat 402, Skyline Towers, Sector 45, Gurugram">
+                        </div>
+                    </div>
+
+                    <!-- Live Price Box -->
+                    <div class="p-3 rounded bg-surface border border-secondary d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <span class="text-muted small d-block">Estimated Total (Includes 18% GST):</span>
+                            <span class="fs-4 fw-bold text-danger" id="wizardTotalAmount">₹ 0.00</span>
+                        </div>
+                        <span class="badge bg-success bg-opacity-25 text-success">Doorstep Pickup: FREE</span>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-red btn-lg">Confirm & Schedule Pickup</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: PORTALS PREVIEW DEMO -->
+<div class="modal fade" id="portalModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content card-dark border-secondary">
+            <div class="modal-header border-dark">
+                <h5 class="modal-title text-white fw-bold" id="portalModalTitle"><i class="fa-solid fa-gauge-high text-danger me-2"></i>Workspace Portal Interactive Preview</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4 text-light" id="portalModalBody">
+                <!-- Dynamically injected portal view -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// 10 Core Services Data
+const servicesCatalog = [
+    { id: 1, name: 'General Service', category: 'Periodic Maintenance', price: 2999, duration: '3-4 Hours', icon: 'fa-tools', badge: 'Bestseller', desc: 'Comprehensive 60-point checkup, engine oil flush, fluid top-ups and spark plug inspection.' },
+    { id: 2, name: 'Oil Change', category: 'Periodic Maintenance', price: 1499, duration: '1-2 Hours', icon: 'fa-oil-can', badge: 'Popular', desc: 'Synthetic premium engine oil replacement, genuine OEM oil filter and sump plug washer renewal.' },
+    { id: 3, name: 'Engine Repair', category: 'Mechanical & Electrical', price: 4999, duration: '5-8 Hours', icon: 'fa-cogs', badge: 'Specialist', desc: 'Computerized OBD-II scanner diagnostics, compression check, timing belt and injector tuning.' },
+    { id: 4, name: 'AC Service', category: 'Periodic Maintenance', price: 1999, duration: '2-3 Hours', icon: 'fa-snowflake', badge: 'Trending', desc: 'AC refrigerant gas recharge, cabin pollen filter cleaning, condenser wash and sanitization.' },
+    { id: 5, name: 'Water Wash', category: 'Detailing & Wash', price: 699, duration: '1 Hour', icon: 'fa-shower', badge: 'Quick Service', desc: 'High-pressure foam exterior wash, underbody chassis cleaning, tyre polish and vacuuming.' },
+    { id: 6, name: 'Breakdown Assistance', category: 'Emergency Assistance', price: 999, duration: 'Within 45 Min', icon: 'fa-truck-pickup', badge: '24/7 Support', desc: '24x7 Roadside emergency assistance: battery jumpstart, tyre puncture repair and towing.' },
+    { id: 7, name: 'Wheel Alignment', category: 'Periodic Maintenance', price: 899, duration: '1-2 Hours', icon: 'fa-compass', badge: 'Essential', desc: 'Computerized 3D 4-wheel laser alignment, electronic laser balancing and tyre rotation.' },
+    { id: 8, name: 'Brake Service', category: 'Mechanical & Electrical', price: 1299, duration: '2-3 Hours', icon: 'fa-circle-notch', badge: 'Safety', desc: 'Front and rear brake pad inspection, caliper degreasing, disc skimming and fluid bleeding.' },
+    { id: 9, name: 'Battery Replacement', category: 'Mechanical & Electrical', price: 3499, duration: '1 Hour', icon: 'fa-car-battery', badge: 'Warranty', desc: 'Automotive battery health check, terminal grease, alternator voltage test and new installation.' },
+    { id: 10, name: 'Dent & Painting', category: 'Body & Paint', price: 2499, duration: '1-2 Days', icon: 'fa-spray-can', badge: 'Premium Finish', desc: 'Paintless dent removal, computerized spectrophotometer paint matching and bake-oven metallic painting.' }
+];
+
+// 12 Workflow Statuses
+const bookingStatuses = [
+    'Booking Pending', 'Booking Confirmed', 'Pickup Assigned', 'Vehicle Picked Up',
+    'Vehicle Received at Workshop', 'Inspection in Progress', 'Waiting for Customer Approval',
+    'Service in Progress', 'Service Completed', 'Ready for Delivery', 'Out for Delivery', 'Delivered'
+];
+
+// Sample Bookings Database for Live Simulation
+let bookingsDatabase = [
+    {
+        number: 'BK-2026-001',
+        car: 'Hyundai Creta SX (O)',
+        reg: 'HR 26 DQ 8899',
+        customer: 'Rahul Sharma (+91 98765 00002)',
+        status: 'Service in Progress',
+        stepIndex: 8,
+        driver: 'Vikram Singh (EMP-DRV-101)',
+        tech: 'Manoj Verma (EMP-TECH-201)',
+        services: ['General Service (₹ 2,999)', 'Brake Service (₹ 1,299)', 'Water Wash (₹ 699)'],
+        total: '₹ 5,697.64',
+        remarks: 'Customer approved estimate for OEM front brake pads renewal. Mechanical work underway on Bay 2.',
+        inspection: { odometer: '34,210 KM', fuel: '75% (3/4 Tank)', tyres: 'Good', brakes: 'Worn (2.5mm)', oil: 'Degraded' }
+    },
+    {
+        number: 'BK-2026-002',
+        car: 'Honda City ZX',
+        reg: 'DL 3C CS 4521',
+        customer: 'Rahul Sharma (+91 98765 00002)',
+        status: 'Delivered',
+        stepIndex: 12,
+        driver: 'Vikram Singh (EMP-DRV-101)',
+        tech: 'Amit Kumar (EMP-TECH-202)',
+        services: ['Oil Change (₹ 1,499)', 'Water Wash (₹ 699)'],
+        total: '₹ 2,593.64',
+        remarks: 'Vehicle serviced, quality checked, washed, and delivered back to customer home. Payment settled.',
+        inspection: { odometer: '48,512 KM', fuel: '50% (Half Tank)', tyres: 'Good', brakes: 'Good', oil: 'Freshly Replaced' }
+    }
+];
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Populate Services Grid
+    const grid = document.getElementById('servicesGrid');
+    servicesCatalog.forEach(s => {
+        const col = document.createElement('div');
+        col.className = 'col-lg-4 col-md-6';
+        col.innerHTML = `
+            <div class="service-box">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="service-icon-wrap"><i class="fa-solid ${s.icon}"></i></div>
+                    <span class="badge bg-danger text-uppercase px-2 py-1">${s.badge}</span>
+                </div>
+                <h4 class="fw-bold text-white mb-2">${s.name}</h4>
+                <p class="text-muted small flex-grow-1 mb-3">${s.desc}</p>
+                <div class="d-flex justify-content-between align-items-center pt-3 border-top border-dark">
+                    <div>
+                        <span class="text-muted small d-block"><i class="fa-solid fa-clock me-1"></i>${s.duration}</span>
+                        <span class="fw-bold fs-5 text-white">₹ ${s.price.toLocaleString()}</span>
+                    </div>
+                    <button class="btn btn-red btn-sm px-3" onclick="openWizardWithService(${s.id})">Book Service</button>
+                </div>
+            </div>
+        `;
+        grid.appendChild(col);
+    });
+
+    // Populate Wizard checkboxes
+    const wizardCheckboxes = document.getElementById('wizardServicesSelection');
+    servicesCatalog.forEach(s => {
+        const div = document.createElement('div');
+        div.className = 'col-md-6';
+        div.innerHTML = `
+            <label class="p-2 rounded border border-secondary bg-surface d-flex justify-content-between align-items-center cursor-pointer small">
+                <span>
+                    <input type="checkbox" class="form-check-input me-2 srv-chk" value="${s.price}" data-name="${s.name}" onchange="recalcWizard()" ${s.id === 1 ? 'checked' : ''}>
+                    <strong class="text-white">${s.name}</strong>
+                </span>
+                <span class="text-danger fw-bold">₹ ${s.price}</span>
+            </label>
+        `;
+        wizardCheckboxes.appendChild(div);
+    });
+
+    // Set default pickup date to tomorrow
+    const tom = new Date();
+    tom.setDate(tom.getDate() + 1);
+    document.getElementById('bDate').value = tom.toISOString().split('T')[0];
+
+    recalcWizard();
+    renderTracker();
+});
+
+function recalcWizard() {
+    let subtotal = 0;
+    document.querySelectorAll('.srv-chk:checked').forEach(c => {
+        subtotal += parseFloat(c.value);
+    });
+    const tax = subtotal * 0.18;
+    const grand = subtotal + tax;
+    document.getElementById('wizardTotalAmount').textContent = '₹ ' + grand.toFixed(2);
+}
+
+function openWizardWithService(id) {
+    document.querySelectorAll('.srv-chk').forEach(c => c.checked = false);
+    const target = document.querySelector(`.srv-chk[data-name="${servicesCatalog.find(s=>s.id===id).name}"]`);
+    if (target) target.checked = true;
+    recalcWizard();
+    const modal = new bootstrap.Modal(document.getElementById('bookServiceModal'));
+    modal.show();
+}
+
+function handleBookSubmit(e) {
+    e.preventDefault();
+    const make = document.getElementById('bMakeModel').value;
+    const reg = document.getElementById('bReg').value;
+    const date = document.getElementById('bDate').value;
+    const total = document.getElementById('wizardTotalAmount').textContent;
+
+    const newNum = 'BK-2026-00' + (bookingsDatabase.length + 1);
+    bookingsDatabase.unshift({
+        number: newNum,
+        car: make,
+        reg: reg,
+        customer: 'Rahul Sharma (+91 98765 00002)',
+        status: 'Booking Confirmed',
+        stepIndex: 2,
+        driver: 'Vikram Singh (Assigned)',
+        tech: 'Manoj Verma (Assigned)',
+        services: ['General Service (Scheduled)'],
+        total: total,
+        remarks: 'Booking confirmed online. Pickup driver scheduled for ' + date + '.',
+        inspection: { odometer: 'Pending pickup', fuel: 'Pending pickup', tyres: 'Pending', brakes: 'Pending', oil: 'Pending' }
+    });
+
+    bootstrap.Modal.getInstance(document.getElementById('bookServiceModal')).hide();
+    alert('Booking ' + newNum + ' created successfully! Redirecting to Live 12-Stage Tracker.');
+    document.getElementById('trackerInput').value = newNum;
+    renderTracker();
+    document.getElementById('tracker-section').scrollIntoView({ behavior: 'smooth' });
+}
+
+function handleTrackSearch(e) {
+    e.preventDefault();
+    document.getElementById('trackerInput').value = document.getElementById('heroTrackInput').value;
+    renderTracker();
+    document.getElementById('tracker-section').scrollIntoView({ behavior: 'smooth' });
+}
+
+function renderTracker() {
+    const q = document.getElementById('trackerInput').value.trim().toUpperCase();
+    const b = bookingsDatabase.find(x => x.number.toUpperCase() === q || x.reg.toUpperCase().replace(/\s/g,'') === q.replace(/\s/g,'')) || bookingsDatabase[0];
+
+    const pct = Math.round((b.stepIndex / 12) * 100);
+    const container = document.getElementById('trackerDisplayArea');
+
+    let stepperHtml = '';
+    bookingStatuses.forEach((st, idx) => {
+        const stepNum = idx + 1;
+        const isDone = stepNum < b.stepIndex || b.status === 'Delivered';
+        const isCur = stepNum === b.stepIndex && b.status !== 'Delivered';
+        const cls = isDone ? 'completed' : (isCur ? 'active' : '');
+
+        stepperHtml += `
+            <div class="stepper-step ${cls}">
+                <div class="stepper-node">${isDone ? '<i class="fa-solid fa-check"></i>' : (isCur ? '<i class="fa-solid fa-gear fa-spin"></i>' : stepNum)}</div>
+                <div class="flex-grow-1">
+                    <h6 class="fw-bold mb-1 ${isCur ? 'text-danger' : (isDone ? 'text-white' : 'text-muted')}">${stepNum}. ${st}</h6>
+                    ${isCur ? `<p class="text-danger small mb-0"><i class="fa-solid fa-circle-dot me-1"></i> ${b.remarks}</p>` : ''}
+                </div>
+            </div>
+        `;
+    });
+
+    container.innerHTML = `
+        <div class="col-lg-7">
+            <div class="card-dark p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <span class="badge bg-danger fs-6 me-2">${b.reg}</span>
+                        <span class="badge bg-secondary">${b.number}</span>
+                        <h3 class="fw-bold text-white mb-0 mt-2">${b.car}</h3>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-warning bg-opacity-25 text-warning fs-6 px-3 py-1 border border-warning">${b.status}</span>
+                        <div class="text-muted small mt-1">Progress: <strong class="text-white">${pct}%</strong></div>
+                    </div>
+                </div>
+                <div class="progress mb-4" style="height: 10px; background-color: #1e2230;">
+                    <div class="progress-bar bg-danger progress-bar-striped progress-bar-animated" style="width: ${pct}%;"></div>
+                </div>
+                <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-timeline text-danger me-2"></i>12-Stage Workflow Timeline</h5>
+                <div class="stepper-container">${stepperHtml}</div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="card-dark p-4 mb-4">
+                <h5 class="fw-bold text-white mb-3 border-bottom border-dark pb-2"><i class="fa-solid fa-user-shield text-danger me-2"></i>Assigned Workshop Crew</h5>
+                <div class="p-3 rounded bg-surface border border-secondary mb-3 small">
+                    <div class="text-muted text-uppercase" style="font-size:0.75rem;">Doorstep Driver</div>
+                    <strong class="text-white fs-6">${b.driver}</strong>
+                </div>
+                <div class="p-3 rounded bg-surface border border-secondary small">
+                    <div class="text-muted text-uppercase" style="font-size:0.75rem;">Master Workshop Mechanic</div>
+                    <strong class="text-white fs-6">${b.tech}</strong>
+                </div>
+            </div>
+            <div class="card-dark p-4">
+                <h5 class="fw-bold text-white mb-3 border-bottom border-dark pb-2"><i class="fa-solid fa-receipt text-danger me-2"></i>Estimated Total</h5>
+                <div class="fs-3 fw-bold text-danger mb-2">${b.total}</div>
+                <div class="text-muted small mb-3">Includes genuine spares, certified labor, and 18% GST.</div>
+                <button class="btn btn-outline-light btn-sm w-100" onclick="alert('Viewing Tax Invoice for ' + '${b.number}')">
+                    <i class="fa-solid fa-file-invoice me-1"></i> View Printable Tax Invoice
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function showPortalPreview(type) {
+    const modalTitle = document.getElementById('portalModalTitle');
+    const modalBody = document.getElementById('portalModalBody');
+
+    if (type === 'customer') {
+        modalTitle.innerHTML = '<i class="fa-solid fa-user text-danger me-2"></i>Customer Garage Portal Preview';
+        modalBody.innerHTML = `
+            <div class="row g-3 mb-4">
+                <div class="col-3"><div class="stat-card"><div class="stat-val">2</div><div class="stat-label">Saved Cars</div></div></div>
+                <div class="col-3"><div class="stat-card"><div class="stat-val text-warning">1</div><div class="stat-label">Active Servicing</div></div></div>
+                <div class="col-3"><div class="stat-card"><div class="stat-val text-success">1</div><div class="stat-label">Delivered</div></div></div>
+                <div class="col-3"><div class="stat-card"><div class="stat-val">₹ 8,291</div><div class="stat-label">Total Spent</div></div></div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-dark-custom">
+                    <thead><tr><th>Ref</th><th>Car</th><th>Status</th><th>Total</th><th>Action</th></tr></thead>
+                    <tbody>
+                        <tr><td>BK-2026-001</td><td>Hyundai Creta (HR 26 DQ 8899)</td><td><span class="badge bg-warning">Service in Progress</span></td><td>₹ 5,697.64</td><td><button class="btn btn-red btn-sm" onclick="bootstrap.Modal.getInstance(document.getElementById('portalModal')).hide(); renderTracker();">Track Live</button></td></tr>
+                        <tr><td>BK-2026-002</td><td>Honda City (DL 3C CS 4521)</td><td><span class="badge bg-success">Delivered</span></td><td>₹ 2,593.64</td><td><button class="btn btn-dark-surface btn-sm">Paid Invoice</button></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        `;
+    } else if (type === 'admin') {
+        modalTitle.innerHTML = '<i class="fa-solid fa-shield-halved text-danger me-2"></i>Admin Command Center Preview';
+        modalBody.innerHTML = `
+            <div class="row g-3 mb-4">
+                <div class="col-3"><div class="stat-card"><div class="stat-val text-success">₹ 142,500</div><div class="stat-label">Month Revenue</div></div></div>
+                <div class="col-3"><div class="stat-card"><div class="stat-val">28</div><div class="stat-label">Total Jobs</div></div></div>
+                <div class="col-3"><div class="stat-card"><div class="stat-val text-info">6</div><div class="stat-label">Active in Bay</div></div></div>
+                <div class="col-3"><div class="stat-card"><div class="stat-val text-warning">4</div><div class="stat-label">Available Drivers</div></div></div>
+            </div>
+            <p class="text-muted small">Admins have full access to assign pickup drivers, reallocate technician bays, override statuses across all 12 stages, and manage invoices.</p>
+        `;
+    } else if (type === 'tech') {
+        modalTitle.innerHTML = '<i class="fa-solid fa-screwdriver-wrench text-danger me-2"></i>Technician Bay Terminal Preview';
+        modalBody.innerHTML = `
+            <div class="p-3 rounded bg-surface border border-secondary mb-3">
+                <h6 class="fw-bold text-white mb-2">Active Bay Vehicle: Hyundai Creta (HR 26 DQ 8899)</h6>
+                <div class="row g-2 small text-muted">
+                    <div class="col-4">Odometer: 34,210 KM</div>
+                    <div class="col-4">Fuel: 75% Tank</div>
+                    <div class="col-4">Battery: 12.6V (Normal)</div>
+                    <div class="col-4">Brake Pad: 2.5mm (Worn)</div>
+                    <div class="col-4">Engine Oil: Degraded</div>
+                    <div class="col-4">Status: Servicing In Progress</div>
+                </div>
+            </div>
+            <p class="text-muted small">Technicians conduct 60-point multi-point checklists and formulate parts + labor estimates before beginning repairs.</p>
+        `;
+    } else if (type === 'pickup') {
+        modalTitle.innerHTML = '<i class="fa-solid fa-truck-pickup text-danger me-2"></i>Pickup Executive Terminal Preview';
+        modalBody.innerHTML = `
+            <div class="p-3 rounded bg-surface border border-secondary mb-3">
+                <h6 class="fw-bold text-white mb-2">Today's Assigned Task: Doorstep Collection</h6>
+                <p class="small text-muted mb-1">Customer: Rahul Sharma (+91 98765 00002)</p>
+                <p class="small text-muted mb-1">Address: Flat 402, Skyline Towers, Sector 45, Gurugram</p>
+                <span class="badge bg-primary">Doorstep Collection Completed & Handed Over to Bay</span>
+            </div>
+        `;
+    }
+    const modal = new bootstrap.Modal(document.getElementById('portalModal'));
+    modal.show();
+}
+
+function handleContact(e) {
+    e.preventDefault();
+    alert('Thank you! Your message has been received. Our workshop service advisor will contact you.');
+    e.target.reset();
+}
+</script>
+</body>
+</html>

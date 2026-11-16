@@ -1,0 +1,47 @@
+/* ===================================================================
+   Print Stylesheet for Invoices & Inspection Reports
+   =================================================================== */
+
+@media print {
+  body {
+    background-color: #fff !important;
+    color: #000 !important;
+    font-size: 12pt;
+    padding: 0;
+    margin: 0;
+  }
+
+  .navbar, .site-footer, .no-print, .btn, .alert {
+    display: none !important;
+  }
+
+  .invoice-card {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    background: transparent !important;
+    color: #000 !important;
+  }
+
+  .text-white {
+    color: #000 !important;
+  }
+
+  .text-muted {
+    color: #555 !important;
+  }
+
+  .badge {
+    border: 1px solid #000 !important;
+    color: #000 !important;
+  }
+
+  .table {
+    border-color: #ddd !important;
+  }
+
+  .table th {
+    background-color: #f3f4f6 !important;
+    color: #000 !important;
+  }
+}

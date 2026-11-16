@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
+  <rect width="600" height="400" fill="#14161f"/>
+  <rect x="50" y="50" width="500" height="300" rx="10" fill="#1b1e2a" stroke="#2b3044" stroke-width="2"/>
+  <text x="300" y="190" fill="#ff2a3a" font-family="sans-serif" font-size="28" font-weight="bold" text-anchor="middle">ENGINE BAY DIAGNOSTICS</text>
+  <text x="300" y="230" fill="#94a3b8" font-family="sans-serif" font-size="16" text-anchor="middle">OBD-II Scanning Passed - Zero Fault Codes</text>
+</svg>

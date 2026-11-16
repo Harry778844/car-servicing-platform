@@ -1,0 +1,9 @@
+# Ignored files
+.DS_Store
+Thumbs.db
+*.log
+database/*.sqlite
+database/*.sqlite-journal
+.vscode/
+.idea/
+vendor/

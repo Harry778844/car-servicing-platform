@@ -1,0 +1,312 @@
+/* ===================================================================
+   AutoPro - Ultra-Premium Luxury Automotive Styling
+   Palette: Deep Obsidian (#07080b) + Carbon Gray (#12141c) + 
+            Electric Crimson Glow (#ff1e38) + Pure Titanium White
+   =================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Rajdhani:wght@500;600;700&display=swap');
+
+:root {
+  --bg-deep: #07080b;
+  --bg-card: rgba(18, 20, 29, 0.75);
+  --bg-surface: #141622;
+  --bg-surface-elevated: #1b1e2e;
+  --border-glass: rgba(255, 255, 255, 0.08);
+  --border-glow: rgba(255, 30, 56, 0.35);
+
+  --crimson: #ff1e38;
+  --crimson-hover: #ff334b;
+  --crimson-glow: 0 0 25px rgba(255, 30, 56, 0.45);
+  --crimson-subtle: rgba(255, 30, 56, 0.12);
+
+  --text-white: #ffffff;
+  --text-gray: #94a3b8;
+  --text-dim: #64748b;
+
+  --gold: #f59e0b;
+  --emerald: #10b981;
+  --cyan: #06b6d4;
+
+  --font-display: 'Rajdhani', sans-serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+  --transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body {
+  background-color: var(--bg-deep);
+  background-image: 
+    radial-gradient(circle at 85% 10%, rgba(255, 30, 56, 0.12) 0%, transparent 45%),
+    radial-gradient(circle at 15% 50%, rgba(6, 182, 212, 0.05) 0%, transparent 40%),
+    linear-gradient(180deg, #090a0f 0%, #06070a 100%);
+  color: var(--text-white);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6, .display-font {
+  font-family: var(--font-display);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Glassmorphism Luxury Cards */
+.glass-panel {
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  transition: var(--transition);
+}
+.glass-panel:hover {
+  border-color: var(--border-glow);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8), var(--crimson-glow);
+}
+
+/* Luxury Buttons */
+.btn-crimson {
+  background: linear-gradient(135deg, #ff1e38 0%, #c40b21 100%);
+  color: #fff !important;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1.6rem;
+  box-shadow: 0 4px 20px rgba(255, 30, 56, 0.35);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+.btn-crimson::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  transition: 0.5s;
+}
+.btn-crimson:hover {
+  background: linear-gradient(135deg, #ff334b 0%, #db0e26 100%);
+  box-shadow: 0 8px 30px rgba(255, 30, 56, 0.6);
+  transform: translateY(-2px);
+}
+.btn-crimson:hover::before {
+  left: 100%;
+}
+
+.btn-glass {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-white) !important;
+  border: 1px solid var(--border-glass);
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1.6rem;
+  backdrop-filter: blur(10px);
+  transition: var(--transition);
+  cursor: pointer;
+}
+.btn-glass:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.btn-outline-crimson {
+  background: transparent;
+  color: var(--crimson) !important;
+  border: 1px solid var(--crimson);
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+}
+.btn-outline-crimson:hover {
+  background: var(--crimson);
+  color: #fff !important;
+  box-shadow: var(--crimson-glow);
+}
+
+/* Nav & Header */
+.premium-nav {
+  background: rgba(7, 8, 11, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-glass);
+  padding: 0.9rem 0;
+  transition: var(--transition);
+}
+.brand-logo {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 1px;
+}
+.brand-logo span {
+  color: var(--crimson);
+  text-shadow: 0 0 15px rgba(255, 30, 56, 0.6);
+}
+
+/* Service Card Luxury */
+.premium-service-card {
+  background: linear-gradient(145deg, rgba(22, 25, 37, 0.7) 0%, rgba(13, 15, 22, 0.9) 100%);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition);
+}
+.premium-service-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--crimson), transparent);
+  opacity: 0;
+  transition: var(--transition);
+}
+.premium-service-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(255, 30, 56, 0.4);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(255, 30, 56, 0.15);
+}
+.premium-service-card:hover::after {
+  opacity: 1;
+}
+
+.service-icon-box {
+  width: 54px;
+  height: 54px;
+  border-radius: var(--radius-md);
+  background: var(--crimson-subtle);
+  border: 1px solid rgba(255, 30, 56, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: var(--crimson);
+  margin-bottom: 1.25rem;
+  transition: var(--transition);
+}
+.premium-service-card:hover .service-icon-box {
+  background: var(--crimson);
+  color: #fff;
+  box-shadow: var(--crimson-glow);
+  transform: scale(1.05);
+}
+
+/* Stepper 12 Stages */
+.luxury-stepper {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  position: relative;
+  padding-left: 2.8rem;
+}
+.luxury-stepper::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 15px;
+  bottom: 15px;
+  width: 2px;
+  background: linear-gradient(180deg, var(--crimson) 0%, rgba(255, 255, 255, 0.1) 100%);
+}
+.stepper-node-lux {
+  position: absolute;
+  left: -2.8rem;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  border: 2px solid var(--border-glass);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text-dim);
+  z-index: 2;
+  transition: var(--transition);
+}
+.step-item.completed .stepper-node-lux {
+  background: var(--emerald);
+  border-color: var(--emerald);
+  color: #fff;
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+}
+.step-item.active .stepper-node-lux {
+  background: var(--crimson);
+  border-color: #fff;
+  color: #fff;
+  box-shadow: var(--crimson-glow);
+  animation: pulse-ring 2s infinite;
+}
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(255, 30, 56, 0.8); }
+  70% { box-shadow: 0 0 0 12px rgba(255, 30, 56, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 30, 56, 0); }
+}
+
+/* Telematics KPI Cards */
+.kpi-card {
+  background: rgba(22, 25, 37, 0.6);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  padding: 1.4rem;
+  transition: var(--transition);
+}
+.kpi-card:hover {
+  background: rgba(26, 30, 45, 0.8);
+  border-color: rgba(255, 30, 56, 0.3);
+}
+
+/* Modals */
+.modal-content.luxury-modal {
+  background: #0d0f17;
+  border: 1px solid rgba(255, 30, 56, 0.3);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(255, 30, 56, 0.2);
+  border-radius: var(--radius-lg);
+}
+
+/* Form Controls */
+.luxury-input {
+  background-color: rgba(20, 23, 34, 0.9);
+  border: 1px solid var(--border-glass);
+  color: #fff;
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1.1rem;
+  transition: var(--transition);
+}
+.luxury-input:focus {
+  background-color: #1a1e2d;
+  border-color: var(--crimson);
+  color: #fff;
+  box-shadow: 0 0 0 3px rgba(255, 30, 56, 0.25);
+  outline: none;
+}
+.luxury-input::placeholder {
+  color: #555e70;
+}

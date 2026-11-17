@@ -1,20 +1,19 @@
 /* ===================================================================
    AutoPro - Ultra-Premium Luxury Automotive Styling Suite
-   Mode: Light Theme (Default) & Dark Theme System
+   Theme: Pure Light Luxury Theme
    Palettes:
-     1. Sapphire Blue (#2563eb / #00f0ff in dark)
-     2. Champagne Gold (#d97706 / #f59e0b in dark)
-     3. Emerald Velocity (#059669 / #00ff88 in dark)
-     4. Scuderia Crimson (#dc2626 / #ff1e38 in dark)
+     1. Sapphire Blue (#2563eb) - Default
+     2. Champagne Gold (#d97706)
+     3. Emerald Velocity (#059669)
+     4. Scuderia Crimson (#dc2626)
    =================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Rajdhani:wght@500;600;700;800&display=swap');
 
 /* ===================================================================
-   1. LIGHT THEME MODE (DEFAULT)
+   1. ROOT VARIABLES (PURE LIGHT THEME)
    =================================================================== */
-:root, [data-theme-mode="light"] {
-  --mode: light;
+:root {
   --bg-deep: #f8fafc;
   --bg-card: #ffffff;
   --bg-card-rgb: 255, 255, 255;
@@ -51,8 +50,10 @@
   --transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Light Palettes */
-:root, [data-theme-mode="light"][data-palette="blue"], [data-theme-mode="light"][data-palette="cyan"] {
+/* ===================================================================
+   2. ACCENT COLOR PALETTES
+   =================================================================== */
+:root, [data-palette="blue"], [data-palette="cyan"] {
   --accent: #2563eb;
   --accent-hover: #1d4ed8;
   --accent-glow: 0 4px 20px rgba(37, 99, 235, 0.25);
@@ -64,7 +65,7 @@
   --theme-ambient: radial-gradient(circle at 85% 10%, rgba(37, 99, 235, 0.08) 0%, transparent 45%);
 }
 
-[data-theme-mode="light"][data-palette="gold"] {
+[data-palette="gold"] {
   --accent: #d97706;
   --accent-hover: #b45309;
   --accent-glow: 0 4px 20px rgba(217, 119, 6, 0.25);
@@ -76,7 +77,7 @@
   --theme-ambient: radial-gradient(circle at 85% 10%, rgba(217, 119, 6, 0.08) 0%, transparent 45%);
 }
 
-[data-theme-mode="light"][data-palette="emerald"] {
+[data-palette="emerald"] {
   --accent: #059669;
   --accent-hover: #047857;
   --accent-glow: 0 4px 20px rgba(5, 150, 105, 0.25);
@@ -88,7 +89,7 @@
   --theme-ambient: radial-gradient(circle at 85% 10%, rgba(5, 150, 105, 0.08) 0%, transparent 45%);
 }
 
-[data-theme-mode="light"][data-palette="crimson"] {
+[data-palette="crimson"] {
   --accent: #dc2626;
   --accent-hover: #b91c1c;
   --accent-glow: 0 4px 20px rgba(220, 38, 38, 0.25);
@@ -98,89 +99,6 @@
   --gradient-btn: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
   --gradient-btn-hover: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   --theme-ambient: radial-gradient(circle at 85% 10%, rgba(220, 38, 38, 0.08) 0%, transparent 45%);
-}
-
-/* ===================================================================
-   2. DARK THEME MODE
-   =================================================================== */
-[data-theme-mode="dark"] {
-  --mode: dark;
-  --bg-deep: #07080c;
-  --bg-card: rgba(18, 20, 29, 0.88);
-  --bg-card-rgb: 18, 20, 29;
-  --bg-surface: #141724;
-  --bg-surface-elevated: #1d2133;
-  --section-alt-bg: #090a0f;
-  --border-glass: rgba(255, 255, 255, 0.08);
-  --border-subtle: rgba(255, 255, 255, 0.1);
-  --border-card: rgba(255, 255, 255, 0.08);
-
-  --card-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-  --card-hover-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
-
-  --text-main: #ffffff;
-  --text-body: #cbd5e1;
-  --text-muted-custom: #94a3b8;
-  --text-dim: #64748b;
-
-  --nav-bg: rgba(7, 8, 12, 0.92);
-  --topbar-bg: #050608;
-  --modal-bg: #0d0f17;
-  --modal-backdrop: rgba(0, 0, 0, 0.88);
-  --input-bg: rgba(20, 23, 34, 0.9);
-  --input-border: rgba(255, 255, 255, 0.12);
-  --input-text: #ffffff;
-  --input-placeholder: #64748b;
-  --footer-bg: #07080c;
-}
-
-/* Dark Palettes */
-[data-theme-mode="dark"][data-palette="gold"] {
-  --accent: #f59e0b;
-  --accent-hover: #fbbf24;
-  --accent-glow: 0 0 28px rgba(245, 158, 11, 0.45);
-  --accent-subtle: rgba(245, 158, 11, 0.14);
-  --border-glow: rgba(245, 158, 11, 0.4);
-  --btn-text: #000000;
-  --gradient-btn: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
-  --gradient-btn-hover: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
-  --theme-ambient: radial-gradient(circle at 85% 10%, rgba(245, 158, 11, 0.14) 0%, transparent 45%);
-}
-
-[data-theme-mode="dark"][data-palette="blue"], [data-theme-mode="dark"][data-palette="cyan"] {
-  --accent: #00f0ff;
-  --accent-hover: #38bdf8;
-  --accent-glow: 0 0 28px rgba(0, 240, 255, 0.5);
-  --accent-subtle: rgba(0, 240, 255, 0.12);
-  --border-glow: rgba(0, 240, 255, 0.4);
-  --btn-text: #000000;
-  --gradient-btn: linear-gradient(135deg, #00f0ff 0%, #0284c7 100%);
-  --gradient-btn-hover: linear-gradient(135deg, #38bdf8 0%, #0369a1 100%);
-  --theme-ambient: radial-gradient(circle at 85% 10%, rgba(0, 240, 255, 0.12) 0%, transparent 45%);
-}
-
-[data-theme-mode="dark"][data-palette="emerald"] {
-  --accent: #00ff88;
-  --accent-hover: #10b981;
-  --accent-glow: 0 0 28px rgba(0, 255, 136, 0.45);
-  --accent-subtle: rgba(0, 255, 136, 0.12);
-  --border-glow: rgba(0, 255, 136, 0.4);
-  --btn-text: #000000;
-  --gradient-btn: linear-gradient(135deg, #00ff88 0%, #059669 100%);
-  --gradient-btn-hover: linear-gradient(135deg, #10b981 0%, #047857 100%);
-  --theme-ambient: radial-gradient(circle at 85% 10%, rgba(0, 255, 136, 0.12) 0%, transparent 45%);
-}
-
-[data-theme-mode="dark"][data-palette="crimson"] {
-  --accent: #ff1e38;
-  --accent-hover: #ff334b;
-  --accent-glow: 0 0 28px rgba(255, 30, 56, 0.45);
-  --accent-subtle: rgba(255, 30, 56, 0.12);
-  --border-glow: rgba(255, 30, 56, 0.4);
-  --btn-text: #ffffff;
-  --gradient-btn: linear-gradient(135deg, #ff1e38 0%, #c40b21 100%);
-  --gradient-btn-hover: linear-gradient(135deg, #ff334b 0%, #db0e26 100%);
-  --theme-ambient: radial-gradient(circle at 85% 10%, rgba(255, 30, 56, 0.12) 0%, transparent 45%);
 }
 
 /* ===================================================================
@@ -199,13 +117,6 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-[data-theme-mode="dark"] body {
-  background-image: 
-    var(--theme-ambient),
-    radial-gradient(circle at 15% 50%, rgba(255, 255, 255, 0.02) 0%, transparent 40%),
-    linear-gradient(180deg, #090a0f 0%, #06070a 100%);
 }
 
 h1, h2, h3, h4, h5, h6, .display-font {
@@ -276,26 +187,6 @@ h1, h2, h3, h4, h5, h6, .display-font {
   color: var(--accent) !important;
 }
 
-/* Mode Switcher Toggle */
-.mode-toggle-btn {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-main);
-  border-radius: 20px;
-  padding: 0.35rem 0.75rem;
-  font-size: 0.8rem;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  cursor: pointer;
-  transition: var(--transition);
-}
-.mode-toggle-btn:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
 /* Theme Palette Dots */
 .theme-palette-box {
   background: var(--bg-surface);
@@ -314,9 +205,6 @@ h1, h2, h3, h4, h5, h6, .display-font {
   cursor: pointer;
   transition: var(--transition);
   padding: 0;
-}
-[data-theme-mode="dark"] .theme-picker-btn {
-  border-color: rgba(255, 255, 255, 0.3);
 }
 .theme-picker-btn:hover, .theme-picker-btn.active {
   transform: scale(1.25);
@@ -610,9 +498,6 @@ h1, h2, h3, h4, h5, h6, .display-font {
   border-radius: var(--radius-lg);
   color: var(--text-main);
 }
-[data-theme-mode="dark"] .modal-content.luxury-modal {
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), var(--accent-glow);
-}
 
 .table-custom {
   color: var(--text-main);
@@ -638,12 +523,8 @@ h1, h2, h3, h4, h5, h6, .display-font {
   background: var(--bg-surface);
 }
 
-/* Close button adaptation */
-[data-theme-mode="light"] .btn-close {
+.btn-close {
   filter: none;
-}
-[data-theme-mode="dark"] .btn-close {
-  filter: invert(1) grayscale(100%) brightness(200%);
 }
 
 /* Footer */

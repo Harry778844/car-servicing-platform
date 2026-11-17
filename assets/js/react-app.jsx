@@ -1,7 +1,7 @@
 /**
  * AutoPro - Ultra-Premium React 18 Application
  * Full Interactive Automotive Maintenance & Telematics Suite
- * Featuring Native Light Theme Mode & Luxury Color Palette Engine
+ * Pure Light Luxury Styling & Automotive Color Palette Engine
  */
 
 const { useState, useEffect, useMemo } = React;
@@ -38,10 +38,10 @@ const STATUS_PIPELINE = [
 
 // Luxury Palettes
 const PALETTES = [
-  { id: 'blue', name: 'Sapphire Blue', lightColor: '#2563eb', darkColor: '#00f0ff' },
-  { id: 'gold', name: 'Champagne Gold', lightColor: '#d97706', darkColor: '#f59e0b' },
-  { id: 'emerald', name: 'Emerald Velocity', lightColor: '#059669', darkColor: '#00ff88' },
-  { id: 'crimson', name: 'Scuderia Crimson', lightColor: '#dc2626', darkColor: '#ff1e38' }
+  { id: 'blue', name: 'Sapphire Blue', color: '#2563eb' },
+  { id: 'gold', name: 'Champagne Gold', color: '#d97706' },
+  { id: 'emerald', name: 'Emerald Velocity', color: '#059669' },
+  { id: 'crimson', name: 'Scuderia Crimson', color: '#dc2626' }
 ];
 
 // Initial Seed Bookings
@@ -107,8 +107,6 @@ const INITIAL_BOOKINGS = [
 ];
 
 function AutoProApp() {
-  // Light mode as primary default
-  const [themeMode, setThemeMode] = useState('light');
   const [currentPalette, setCurrentPalette] = useState('blue');
   const [bookings, setBookings] = useState(INITIAL_BOOKINGS);
   const [activeTrackingQuery, setActiveTrackingQuery] = useState('BK-2026-001');
@@ -134,11 +132,10 @@ function AutoProApp() {
   const [wTime, setWTime] = useState('09:00 AM - 11:00 AM');
   const [wAddress, setWAddress] = useState('Flat 402, Skyline Towers, Sector 45, Gurugram');
 
-  // Sync theme mode and palette attribute to HTML tag
+  // Sync palette attribute to HTML tag
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme-mode', themeMode);
     document.documentElement.setAttribute('data-palette', currentPalette);
-  }, [themeMode, currentPalette]);
+  }, [currentPalette]);
 
   // Active tracking booking
   const activeBooking = useMemo(() => {
@@ -264,7 +261,7 @@ function AutoProApp() {
         </div>
       )}
 
-      {/* Top Utility Bar with Light/Dark Mode Switcher & Palettes */}
+      {/* Top Utility Bar with Accent Palette Switcher */}
       <div className="top-bar-custom py-2">
         <div className="container d-flex flex-wrap justify-content-between align-items-center gap-2">
           <div>
@@ -277,38 +274,21 @@ function AutoProApp() {
           </div>
 
           <div className="d-flex align-items-center gap-3">
-            {/* ☀️ / 🌙 Light-Dark Mode Toggle */}
-            <button 
-              className="mode-toggle-btn"
-              onClick={() => {
-                const nextMode = themeMode === 'light' ? 'dark' : 'light';
-                setThemeMode(nextMode);
-                showToast(`Switched to ${nextMode === 'light' ? '☀️ Light Mode' : '🌙 Dark Mode'}`);
-              }}
-              title="Toggle Light / Dark Mode"
-            >
-              <i className={`fa-solid ${themeMode === 'light' ? 'fa-sun text-warning' : 'fa-moon text-info'}`}></i>
-              <span>{themeMode === 'light' ? 'Light Mode' : 'Dark Mode'}</span>
-            </button>
-
             {/* Color Accent Picker */}
             <div className="theme-palette-box">
               <span className="theme-text-muted text-uppercase" style={{ fontSize: '0.7rem' }}>Accent:</span>
-              {PALETTES.map(p => {
-                const dotColor = themeMode === 'light' ? p.lightColor : p.darkColor;
-                return (
-                  <button
-                    key={p.id}
-                    title={p.name}
-                    className={`theme-picker-btn ${currentPalette === p.id ? 'active' : ''}`}
-                    style={{ backgroundColor: dotColor }}
-                    onClick={() => {
-                      setCurrentPalette(p.id);
-                      showToast(`Palette: ${p.name}`);
-                    }}
-                  ></button>
-                );
-              })}
+              {PALETTES.map(p => (
+                <button
+                  key={p.id}
+                  title={p.name}
+                  className={`theme-picker-btn ${currentPalette === p.id ? 'active' : ''}`}
+                  style={{ backgroundColor: p.color }}
+                  onClick={() => {
+                    setCurrentPalette(p.id);
+                    showToast(`Accent: ${p.name}`);
+                  }}
+                ></button>
+              ))}
             </div>
 
             <a href="https://github.com/Harry778844/car-servicing-platform" target="_blank" className="theme-text-muted text-decoration-none small">
@@ -1095,7 +1075,7 @@ function AutoProApp() {
           </div>
           <hr className="border-subtle my-3"/>
           <div className="d-flex justify-content-between small theme-text-muted">
-            <span>&copy; 2026 AutoPro Car Care. Deployed live with React 18 in Light Mode.</span>
+            <span>&copy; 2026 AutoPro Car Care. Deployed live with React 18.</span>
             <span>https://harry778844.github.io/car-servicing-platform/</span>
           </div>
         </div>

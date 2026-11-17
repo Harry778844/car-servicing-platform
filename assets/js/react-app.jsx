@@ -38,6 +38,7 @@ const STATUS_PIPELINE = [
 
 // Luxury Palettes
 const PALETTES = [
+  { id: 'wine', name: 'Royal Wine (#590907)', color: '#590907' },
   { id: 'blue', name: 'Sapphire Blue', color: '#2563eb' },
   { id: 'gold', name: 'Champagne Gold', color: '#d97706' },
   { id: 'emerald', name: 'Emerald Velocity', color: '#059669' },
@@ -107,7 +108,7 @@ const INITIAL_BOOKINGS = [
 ];
 
 function AutoProApp() {
-  const [currentPalette, setCurrentPalette] = useState('blue');
+  const [currentPalette, setCurrentPalette] = useState('wine');
   const [bookings, setBookings] = useState(INITIAL_BOOKINGS);
   const [activeTrackingQuery, setActiveTrackingQuery] = useState('BK-2026-001');
   const [selectedCategory, setSelectedCategory] = useState('All');

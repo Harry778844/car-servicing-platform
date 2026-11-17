@@ -2,10 +2,11 @@
    AutoPro - Ultra-Premium Luxury Automotive Styling Suite
    Theme: Pure Light Luxury Theme
    Palettes:
-     1. Sapphire Blue (#2563eb) - Default
-     2. Champagne Gold (#d97706)
-     3. Emerald Velocity (#059669)
-     4. Scuderia Crimson (#dc2626)
+     1. Royal Wine (#590907) - Default
+     2. Sapphire Blue (#2563eb)
+     3. Champagne Gold (#d97706)
+     4. Emerald Velocity (#059669)
+     5. Scuderia Crimson (#dc2626)
    =================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Rajdhani:wght@500;600;700;800&display=swap');
@@ -53,7 +54,19 @@
 /* ===================================================================
    2. ACCENT COLOR PALETTES
    =================================================================== */
-:root, [data-palette="blue"], [data-palette="cyan"] {
+:root, [data-palette="wine"] {
+  --accent: #590907;
+  --accent-hover: #780d0a;
+  --accent-glow: 0 4px 20px rgba(89, 9, 7, 0.35);
+  --accent-subtle: rgba(89, 9, 7, 0.08);
+  --border-glow: rgba(89, 9, 7, 0.4);
+  --btn-text: #ffffff;
+  --gradient-btn: linear-gradient(135deg, #590907 0%, #380504 100%);
+  --gradient-btn-hover: linear-gradient(135deg, #780d0a 0%, #590907 100%);
+  --theme-ambient: radial-gradient(circle at 85% 10%, rgba(89, 9, 7, 0.09) 0%, transparent 45%);
+}
+
+[data-palette="blue"], [data-palette="cyan"] {
   --accent: #2563eb;
   --accent-hover: #1d4ed8;
   --accent-glow: 0 4px 20px rgba(37, 99, 235, 0.25);

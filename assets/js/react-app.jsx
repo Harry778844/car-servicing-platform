@@ -260,13 +260,9 @@ function AutoProApp() {
           </div>
 
           <div className="d-flex align-items-center gap-3">
-            <span className="badge px-3 py-1 text-white d-none d-sm-inline-flex align-items-center" style={{ backgroundColor: '#590907', letterSpacing: '0.5px', fontSize: '0.75rem', borderRadius: '20px' }}>
+            <span className="badge px-3 py-1 text-white d-inline-flex align-items-center" style={{ backgroundColor: '#590907', letterSpacing: '0.5px', fontSize: '0.75rem', borderRadius: '20px' }}>
               <i className="fa-solid fa-gem me-1"></i> Bespoke Edition
             </span>
-
-            <a href="https://github.com/Harry778844/car-servicing-platform" target="_blank" className="theme-text-muted text-decoration-none small">
-              <i className="fa-brands fa-github text-accent me-1"></i>GitHub
-            </a>
           </div>
         </div>
       </div>
@@ -1039,17 +1035,16 @@ function AutoProApp() {
               <div className="small theme-text-muted">Periodic Maintenance &bull; Engine Diagnostics &bull; AC Recharge &bull; Foam Water Wash &bull; Brake Caliper Renewal &bull; Laser Wheel Alignment</div>
             </div>
             <div className="col-lg-4 col-6">
-              <h6 className="footer-title">Official Repository</h6>
-              <p className="small theme-text-muted mb-2">Full-stack source code with 17 MySQL tables, Dockerfile, and container configs.</p>
-              <a href="https://github.com/Harry778844/car-servicing-platform" className="btn-accent btn-sm text-decoration-none d-inline-block" target="_blank">
-                <i className="fa-brands fa-github me-1"></i>View on GitHub
-              </a>
+              <h6 className="footer-title">Workshop & Support</h6>
+              <div className="small theme-text-muted mb-1"><i className="fa-solid fa-clock text-accent me-1"></i> Mon - Sun: 8:00 AM - 8:00 PM</div>
+              <div className="small theme-text-muted mb-1"><i className="fa-solid fa-phone text-accent me-1"></i> Helpline: +91 (800) 456-7890</div>
+              <div className="small theme-text-muted"><i className="fa-solid fa-shield-halved text-accent me-1"></i> 6-Month / 10,000 KM Warranty</div>
             </div>
           </div>
           <hr className="border-subtle my-3"/>
-          <div className="d-flex justify-content-between small theme-text-muted">
-            <span>&copy; 2026 AutoPro Car Care. Deployed live with React 18.</span>
-            <span>https://harry778844.github.io/car-servicing-platform/</span>
+          <div className="d-flex flex-wrap justify-content-between small theme-text-muted">
+            <span>&copy; 2026 AutoPro Car Care Platform. All rights reserved.</span>
+            <span>ISO 9001:2015 Certified Workshop &bull; 100% Genuine OEM Spares</span>
           </div>
         </div>
       </footer>

@@ -36,15 +36,6 @@ const STATUS_PIPELINE = [
   'Delivered'
 ];
 
-// Luxury Palettes
-const PALETTES = [
-  { id: 'wine', name: 'Royal Wine (#590907)', color: '#590907' },
-  { id: 'blue', name: 'Sapphire Blue', color: '#2563eb' },
-  { id: 'gold', name: 'Champagne Gold', color: '#d97706' },
-  { id: 'emerald', name: 'Emerald Velocity', color: '#059669' },
-  { id: 'crimson', name: 'Scuderia Crimson', color: '#dc2626' }
-];
-
 // Initial Seed Bookings
 const INITIAL_BOOKINGS = [
   {
@@ -108,7 +99,6 @@ const INITIAL_BOOKINGS = [
 ];
 
 function AutoProApp() {
-  const [currentPalette, setCurrentPalette] = useState('wine');
   const [bookings, setBookings] = useState(INITIAL_BOOKINGS);
   const [activeTrackingQuery, setActiveTrackingQuery] = useState('BK-2026-001');
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -132,11 +122,6 @@ function AutoProApp() {
   });
   const [wTime, setWTime] = useState('09:00 AM - 11:00 AM');
   const [wAddress, setWAddress] = useState('Flat 402, Skyline Towers, Sector 45, Gurugram');
-
-  // Sync palette attribute to HTML tag
-  useEffect(() => {
-    document.documentElement.setAttribute('data-palette', currentPalette);
-  }, [currentPalette]);
 
   // Active tracking booking
   const activeBooking = useMemo(() => {
@@ -275,22 +260,9 @@ function AutoProApp() {
           </div>
 
           <div className="d-flex align-items-center gap-3">
-            {/* Color Accent Picker */}
-            <div className="theme-palette-box">
-              <span className="theme-text-muted text-uppercase" style={{ fontSize: '0.7rem' }}>Accent:</span>
-              {PALETTES.map(p => (
-                <button
-                  key={p.id}
-                  title={p.name}
-                  className={`theme-picker-btn ${currentPalette === p.id ? 'active' : ''}`}
-                  style={{ backgroundColor: p.color }}
-                  onClick={() => {
-                    setCurrentPalette(p.id);
-                    showToast(`Accent: ${p.name}`);
-                  }}
-                ></button>
-              ))}
-            </div>
+            <span className="badge px-3 py-1 text-white d-none d-sm-inline-flex align-items-center" style={{ backgroundColor: '#590907', letterSpacing: '0.5px', fontSize: '0.75rem', borderRadius: '20px' }}>
+              <i className="fa-solid fa-gem me-1"></i> Bespoke Edition
+            </span>
 
             <a href="https://github.com/Harry778844/car-servicing-platform" target="_blank" className="theme-text-muted text-decoration-none small">
               <i className="fa-brands fa-github text-accent me-1"></i>GitHub

@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Portal - AutoPro Car Care</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏎️</text></svg>">
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6.5 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Base & Premium Theme CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/premium.css">
+    
+    <!-- React 18, ReactDOM 18 & Babel Standalone CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Shared Store -->
+    <script src="assets/js/shared-store.js"></script>
+</head>
+<body>
+
+    <div id="customer-root">
+        <!-- Pre-hydration loader -->
+        <div class="d-flex flex-column align-items-center justify-content-center min-vh-100" style="background-color: #f8fafc; color: #0f172a;">
+            <div class="spinner-grow mb-3" style="width: 3rem; height: 3rem; color: #590907;" role="status"></div>
+            <h3 class="fw-bold brand-logo">AUTO<span style="color: #590907;">PRO</span></h3>
+            <p class="text-muted small">Loading Customer Garage & Telematics...</p>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5.3 Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- React Customer App -->
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        function CustomerPortalApp() {
+            const [bookings, setBookings] = useState(loadBookings);
+            const [vehicles, setVehicles] = useState(loadVehicles);
+            const [activeTab, setActiveTab] = useState('active'); // 'garage', 'active', 'history', 'book'
+            const [selectedBookingNum, setSelectedBookingNum] = useState(() => {
+                const b = loadBookings();
+                return b.length > 0 ? b[0].number : '';
+            });
+            const [toast, setToast] = useState(null);
+
+            // Modals
+            const [isAddVehicleOpen, setIsAddVehicleOpen] = useState(false);
+            const [isEstimateModalOpen, setIsEstimateModalOpen] = useState(false);
+            const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
+            const [invoiceBooking, setInvoiceBooking] = useState(null);
+
+            // New Vehicle Form State
+            const [newMake, setNewMake] = useState('');
+            const [newReg, setNewReg] = useState('');
+            const [newYear, setNewYear] = useState('2022');
+            const [newFuel, setNewFuel] = useState('Petrol');
+            const [newColor, setNewColor] = useState('Pearl White');
+            const [newOdo, setNewOdo] = useState('25000');
+
+            // Quick Booking Form State
+            const [wCar, setWCar] = useState('');
+            const [wServices, setWServices] = useState([1]);
+            const [wDate, setWDate] = useState(() => {
+                const d = new Date(); d.setDate(d.getDate() + 1); return d.toISOString().split('T')[0];
+            });
+            const [wTime, setWTime] = useState('09:00 AM - 11:00 AM');
+            const [wAddress, setWAddress] = useState('Flat 402, Skyline Towers, Sector 45, Gurugram');
+
+            useEffect(() => {
+                if (vehicles.length > 0 && !wCar) {
+                    setWCar(vehicles[0].make + ' (' + vehicles[0].reg + ')');
+                }
+            }, [vehicles]);
+
+            // Sync with other tabs
+            useEffect(() => {
+                const handleSync = () => {
+                    setBookings(loadBookings());
+                    setVehicles(loadVehicles());
+                };
+                window.addEventListener('autopro_storage_change', handleSync);
+                window.addEventListener('storage', handleSync);
+                return () => {
+                    window.removeEventListener('autopro_storage_change', handleSync);
+                    window.removeEventListener('storage', handleSync);
+                };
+            }, []);
+
+            const showToast = (msg) => {
+                setToast(msg);
+                setTimeout(() => setToast(null), 3500);
+            };
+
+            const activeBooking = useMemo(() => {
+                return bookings.find(b => b.number === selectedBookingNum) || bookings[0] || null;
+            }, [bookings, selectedBookingNum]);
+
+            // Add Vehicle Handler
+            const handleAddVehicle = (e) => {
+                e.preventDefault();
+                if (!newMake || !newReg) return;
+                const newV = {
+                    id: Date.now(),
+                    make: newMake,
+                    reg: newReg.toUpperCase(),
+                    year: parseInt(newYear) || 2022,
+                    fuel: newFuel,
+                    color: newColor,
+                    odometer: parseInt(newOdo) || 10000,
+                    health: '98% (Optimal)'
+                };
+                const updated = [...vehicles, newV];
+                setVehicles(updated);
+                saveVehicles(updated);
+                setIsAddVehicleOpen(false);
+                setNewMake('');
+                setNewReg('');
+                showToast(`Vehicle ${newV.make} added to your Garage!`);
+            };
+
+            // Estimate Approval Handler
+            const handleApproveEstimate = (approved) => {
+                if (!activeBooking) return;
+                const updated = bookings.map(b => {
+                    if (b.number === activeBooking.number) {
+                        return {
+                            ...b,
+                            status: approved ? 'Service in Progress' : 'Inspection in Progress',
+                            stepIndex: approved ? 8 : 6,
+                            remarks: approved
+                                ? 'Customer digitally approved estimate for parts & labor. Technician started repair.'
+                                : 'Customer requested revisions. Service advisor notified.'
+                        };
+                    }
+                    return b;
+                });
+                setBookings(updated);
+                saveBookings(updated);
+                setIsEstimateModalOpen(false);
+                showToast(approved ? 'Estimate approved! Bay technicians started servicing.' : 'Estimate revision requested.');
+            };
+
+            // Payment Handler
+            const handlePayNow = (bookingNum) => {
+                const updated = bookings.map(b => {
+                    if (b.number === bookingNum) {
+                        return { ...b, paymentStatus: 'Paid' };
+                    }
+                    return b;
+                });
+                setBookings(updated);
+                saveBookings(updated);
+                showToast('Payment settled successfully via Razorpay!');
+            };
+
+            // Booking creation handler
+            const handleCreateBooking = (e) => {
+                e.preventDefault();
+                const newNum = 'BK-2026-00' + (bookings.length + 1);
+                let sub = 0;
+                const chosenServiceNames = wServices.map(id => {
+                    const s = INITIAL_SERVICES.find(x => x.id === id);
+                    if (s) {
+                        sub += s.price;
+                        return `${s.name} (₹ ${s.price})`;
+                    }
+                    return '';
+                }).filter(Boolean);
+
+                const tax = sub * 0.18;
+                const grand = sub + tax;
+
+                const newBooking = {
+                    number: newNum,
+                    car: wCar || 'Registered Vehicle',
+                    year: 2022,
+                    reg: wCar.includes('(') ? wCar.split('(')[1].replace(')', '') : 'HR 26 DQ 8899',
+                    fuel: 'Diesel',
+                    color: 'Titanium Grey',
+                    customer: 'Rahul Sharma',
+                    phone: '+91 98765 00002',
+                    address: wAddress,
+                    status: 'Booking Confirmed',
+                    stepIndex: 2,
+                    driver: 'Vikram Singh (Assigned)',
+                    tech: 'Manoj Verma (Assigned)',
+                    services: chosenServiceNames,
+                    subtotal: sub,
+                    tax: tax,
+                    total: grand,
+                    paymentStatus: 'Unpaid',
+                    remarks: `Pickup slot scheduled for ${wDate} (${wTime}). Doorstep driver dispatched.`,
+                    odometer: 32000,
+                    fuelLevel: '75%',
+                    date: wDate,
+                    time: wTime,
+                    estimate: { parts: sub * 0.6, labor: sub * 0.4, discount: 0, approved: false }
+                };
+
+                const updated = [newBooking, ...bookings];
+                setBookings(updated);
+                saveBookings(updated);
+                setSelectedBookingNum(newNum);
+                setActiveTab('active');
+                showToast(`New Booking ${newNum} confirmed! Doorstep pickup scheduled.`);
+            };
+
+            // Total spent calculation
+            const totalSpent = useMemo(() => {
+                return bookings.filter(b => b.paymentStatus === 'Paid').reduce((acc, curr) => acc + curr.total, 0);
+            }, [bookings]);
+
+            return (
+                <div className="min-vh-100 d-flex flex-column">
+                    {/* Toast Notification */}
+                    {toast && (
+                        <div className="position-fixed bottom-0 end-0 p-3" style={{ zIndex: 9999 }}>
+                            <div className="toast show align-items-center shadow-lg p-2 rounded glass-panel">
+                                <div className="d-flex align-items-center">
+                                    <i className="fa-solid fa-circle-check text-accent fs-5 me-2 ms-2"></i>
+                                    <div className="toast-body fw-bold theme-text-main">{toast}</div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Top Utility Bar */}
+                    <div className="top-bar-custom py-2">
+                        <div className="container d-flex flex-wrap justify-content-between align-items-center gap-2">
+                            <div>
+                                <span className="me-3">
+                                    <i className="fa-solid fa-phone text-accent me-1"></i> Helpline: <a href="tel:+918004567890" className="fw-bold theme-text-main text-decoration-none">+91 (800) 456-7890</a>
+                                </span>
+                                <span className="theme-text-muted d-none d-md-inline">
+                                    <i className="fa-solid fa-shield-halved text-accent me-1"></i> 100% Genuine OEM Spares &bull; 6-Month Warranty
+                                </span>
+                            </div>
+
+                            <div className="d-flex align-items-center gap-3">
+                                <span className="badge px-3 py-1 text-white d-inline-flex align-items-center" style={{ backgroundColor: '#590907', letterSpacing: '0.5px', fontSize: '0.75rem', borderRadius: '20px' }}>
+                                    <i className="fa-solid fa-user-circle me-1"></i> Rahul Sharma (CUST-1002)
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Navigation Header */}
+                    <nav className="premium-nav sticky-top">
+                        <div className="container d-flex justify-content-between align-items-center">
+                            <a href="index.html" className="brand-logo text-decoration-none d-flex align-items-center">
+                                <i className="fa-solid fa-car-tunnel me-2 text-accent"></i>AUTO<span>PRO</span>
+                            </a>
+
+                            <div className="d-none d-md-flex align-items-center gap-4">
+                                <a href="index.html" className="nav-link-custom">Home</a>
+                                <a href="customer.html" className="nav-link-custom active fw-bold text-accent">Customer Portal</a>
+                                <a href="employee.html" className="nav-link-custom">Employee Portal</a>
+                                <a href="admin.html" className="nav-link-custom">Admin Command</a>
+                            </div>
+
+                            <div className="d-flex align-items-center gap-2">
+                                <button className="btn-accent btn-sm" onClick={() => setActiveTab('book')}>
+                                    <i className="fa-solid fa-calendar-plus me-1"></i>Book Service
+                                </button>
+                            </div>
+                        </div>
+                    </nav>
+
+                    {/* Portal Hero Banner */}
+                    <div className="section-alt py-4 border-bottom border-subtle">
+                        <div className="container">
+                            <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                                <div>
+                                    <div className="hero-tag mb-2">
+                                        <i className="fa-solid fa-gauge-high me-1"></i> Customer Garage & Telematics
+                                    </div>
+                                    <h2 className="fw-bold fs-2 mb-1">Welcome back, Rahul Sharma</h2>
+                                    <p className="theme-text-muted mb-0">Manage registered vehicles, approve digital workshop quotes, and track live telematics.</p>
+                                </div>
+                                <div className="d-flex gap-2">
+                                    <button className="btn-glass btn-sm" onClick={() => setIsAddVehicleOpen(true)}>
+                                        <i className="fa-solid fa-plus text-accent me-1"></i>Add Vehicle
+                                    </button>
+                                    <button className="btn-accent btn-sm" onClick={() => setActiveTab('book')}>
+                                        <i className="fa-solid fa-truck-pickup me-1"></i>Schedule Pickup
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* 4 KPI Summary Cards */}
+                            <div className="row g-3 mt-3">
+                                <div className="col-6 col-md-3">
+                                    <div className="kpi-card text-center cursor-pointer" onClick={() => setActiveTab('garage')}>
+                                        <div className="text-accent fw-bold fs-3 display-font">{vehicles.length}</div>
+                                        <div className="theme-text-muted small text-uppercase">My Vehicles</div>
+                                    </div>
+                                </div>
+                                <div className="col-6 col-md-3">
+                                    <div className="kpi-card text-center cursor-pointer" onClick={() => setActiveTab('active')}>
+                                        <div className="text-warning fw-bold fs-3 display-font">{bookings.filter(b => b.status !== 'Delivered').length}</div>
+                                        <div className="theme-text-muted small text-uppercase">Active Servicing</div>
+                                    </div>
+                                </div>
+                                <div className="col-6 col-md-3">
+                                    <div className="kpi-card text-center cursor-pointer" onClick={() => setActiveTab('history')}>
+                                        <div className="text-success fw-bold fs-3 display-font">{bookings.filter(b => b.status === 'Delivered').length}</div>
+                                        <div className="theme-text-muted small text-uppercase">Completed Services</div>
+                                    </div>
+                                </div>
+                                <div className="col-6 col-md-3">
+                                    <div className="kpi-card text-center">
+                                        <div className="theme-text-main fw-bold fs-3 display-font">₹ {totalSpent.toLocaleString()}</div>
+                                        <div className="theme-text-muted small text-uppercase">Total Expenditure</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Customer Navigation Tabs */}
+                    <div className="container py-4">
+                        <div className="d-flex flex-wrap gap-2 mb-4 pb-2 border-bottom border-subtle">
+                            <button className={`btn btn-sm ${activeTab === 'active' ? 'btn-accent' : 'btn-glass'}`} onClick={() => setActiveTab('active')}>
+                                <i className="fa-solid fa-radar me-1"></i>Active Telematics ({bookings.filter(b => b.status !== 'Delivered').length})
+                            </button>
+                            <button className={`btn btn-sm ${activeTab === 'garage' ? 'btn-accent' : 'btn-glass'}`} onClick={() => setActiveTab('garage')}>
+                                <i className="fa-solid fa-car me-1"></i>My Garage ({vehicles.length})
+                            </button>
+                            <button className={`btn btn-sm ${activeTab === 'history' ? 'btn-accent' : 'btn-glass'}`} onClick={() => setActiveTab('history')}>
+                                <i className="fa-solid fa-clock-rotate-left me-1"></i>Service History & Invoices
+                            </button>
+                            <button className={`btn btn-sm ${activeTab === 'book' ? 'btn-accent' : 'btn-glass'}`} onClick={() => setActiveTab('book')}>
+                                <i className="fa-solid fa-calendar-check me-1"></i>Book Service
+                            </button>
+                        </div>
+
+                        {/* TAB 1: ACTIVE TELEMATICS */}
+                        {activeTab === 'active' && (
+                            <div>
+                                {bookings.filter(b => b.status !== 'Delivered').length === 0 ? (
+                                    <div className="glass-panel p-5 text-center">
+                                        <i className="fa-solid fa-car-side fs-1 text-accent mb-3"></i>
+                                        <h4 className="fw-bold">No Active Servicing in Progress</h4>
+                                        <p className="theme-text-muted mb-4">All your vehicles are in top shape! Book a periodic service or water wash whenever you need.</p>
+                                        <button className="btn-accent" onClick={() => setActiveTab('book')}>
+                                            <i className="fa-solid fa-calendar-plus me-1"></i>Book Periodic Maintenance
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        {/* Booking selector pills if multiple */}
+                                        <div className="d-flex gap-2 mb-4 overflow-auto pb-2">
+                                            {bookings.filter(b => b.status !== 'Delivered').map(b => (
+                                                <button
+                                                    key={b.number}
+                                                    className={`btn btn-sm ${selectedBookingNum === b.number ? 'btn-accent' : 'btn-glass'}`}
+                                                    onClick={() => setSelectedBookingNum(b.number)}
+                                                >
+                                                    <i className="fa-solid fa-car me-1"></i>{b.car} ({b.number})
+                                                </button>
+                                            ))}
+                                        </div>
+
+                                        {activeBooking && (
+                                            <div className="row g-4">
+                                                {/* Left: 12-Stage Visual Stepper */}
+                                                <div className="col-lg-7">
+                                                    <div className="glass-panel p-4 p-md-5">
+                                                        <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3 border-bottom border-subtle">
+                                                            <div>
+                                                                <span className="badge badge-accent fs-6 me-2">{activeBooking.reg}</span>
+                                                                <span className="badge bg-secondary">{activeBooking.number}</span>
+                                                                <h3 className="fw-bold mb-0 mt-2">{activeBooking.car}</h3>
+                                                            </div>
+                                                            <div className="text-end">
+                                                                <span className="badge bg-warning bg-opacity-25 text-warning fs-6 px-3 py-1 border border-warning">
+                                                                    {activeBooking.status}
+                                                                </span>
+                                                                <div className="theme-text-muted small mt-1">
+                                                                    Progress: <strong className="theme-text-main">{Math.round((activeBooking.stepIndex / 12) * 100)}%</strong>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Animated Progress Bar */}
+                                                        <div className="progress mb-4" style={{ height: '8px', backgroundColor: 'var(--bg-surface-elevated)' }}>
+                                                            <div 
+                                                                className="progress-bar progress-bar-striped progress-bar-animated" 
+                                                                style={{ width: `${Math.round((activeBooking.stepIndex / 12) * 100)}%`, backgroundColor: 'var(--accent)' }}
+                                                            ></div>
+                                                        </div>
+
+                                                        {/* Estimate Approval Alert */}
+                                                        {activeBooking.status === 'Waiting for Customer Approval' && (
+                                                            <div className="p-3 rounded bg-warning bg-opacity-10 border border-warning mb-4">
+                                                                <div className="d-flex justify-content-between align-items-center">
+                                                                    <div>
+                                                                        <strong className="text-warning d-block"><i className="fa-solid fa-hourglass-half me-1"></i> Estimate Approval Required</strong>
+                                                                        <span className="small theme-text-body">Mechanic generated quote for parts & labor. Tap to review.</span>
+                                                                    </div>
+                                                                    <button className="btn btn-warning btn-sm fw-bold" onClick={() => setIsEstimateModalOpen(true)}>
+                                                                        Review & Approve
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                        <h5 className="fw-bold mb-4"><i className="fa-solid fa-timeline text-accent me-2"></i>12-Stage Workshop Audit Trail</h5>
+
+                                                        <div className="luxury-stepper">
+                                                            {STATUS_PIPELINE.map((st, idx) => {
+                                                                const stepNum = idx + 1;
+                                                                const isDone = stepNum < activeBooking.stepIndex || activeBooking.status === 'Delivered';
+                                                                const isCur = stepNum === activeBooking.stepIndex && activeBooking.status !== 'Delivered';
+                                                                const cls = isDone ? 'completed' : (isCur ? 'active' : '');
+
+                                                                return (
+                                                                    <div key={idx} className={`step-item ${cls}`} style={{ position: 'relative' }}>
+                                                                        <div className="stepper-node-lux">
+                                                                            {isDone ? <i className="fa-solid fa-check"></i> : (isCur ? <i className="fa-solid fa-gear fa-spin"></i> : stepNum)}
+                                                                        </div>
+                                                                        <div className="ms-2">
+                                                                            <h6 className={`fw-bold mb-1 ${isCur ? 'text-accent' : (isDone ? 'theme-text-main' : 'theme-text-muted')}`}>
+                                                                                {stepNum}. {st}
+                                                                            </h6>
+                                                                            {isCur && (
+                                                                                <p className="text-accent small mb-0"><i className="fa-solid fa-circle-dot me-1"></i> {activeBooking.remarks}</p>
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Right: Assigned Crew, Telematics & Invoice Box */}
+                                                <div className="col-lg-5">
+                                                    <div className="glass-panel p-4 mb-4">
+                                                        <h5 className="fw-bold mb-3 border-bottom border-subtle pb-2">
+                                                            <i className="fa-solid fa-user-shield text-accent me-2"></i>Assigned Workshop Crew
+                                                        </h5>
+                                                        <div className="p-3 rounded kpi-card mb-3 small">
+                                                            <small className="theme-text-muted text-uppercase d-block" style={{ fontSize: '0.75rem' }}>Doorstep Pickup Driver</small>
+                                                            <strong className="theme-text-main fs-6">{activeBooking.driver}</strong>
+                                                        </div>
+                                                        <div className="p-3 rounded kpi-card small">
+                                                            <small className="theme-text-muted text-uppercase d-block" style={{ fontSize: '0.75rem' }}>Diagnostic Master Technician</small>
+                                                            <strong className="theme-text-main fs-6">{activeBooking.tech}</strong>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="glass-panel p-4 mb-4">
+                                                        <h5 className="fw-bold mb-3 border-bottom border-subtle pb-2">
+                                                            <i className="fa-solid fa-gauge-high text-accent me-2"></i>Vehicle Telematics
+                                                        </h5>
+                                                        <div className="row g-2 small theme-text-muted">
+                                                            <div className="col-6">Odometer: <strong className="theme-text-main">{activeBooking.odometer.toLocaleString()} KM</strong></div>
+                                                            <div className="col-6">Fuel Level: <strong className="theme-text-main">{activeBooking.fuelLevel}</strong></div>
+                                                            <div className="col-6">Fuel Type: <strong className="theme-text-main">{activeBooking.fuel}</strong></div>
+                                                            <div className="col-6">Color: <strong className="theme-text-main">{activeBooking.color}</strong></div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="glass-panel p-4">
+                                                        <h5 className="fw-bold mb-3 border-bottom border-subtle pb-2">
+                                                            <i className="fa-solid fa-file-invoice text-accent me-2"></i>Invoice Breakdown
+                                                        </h5>
+                                                        <div className="d-flex justify-content-between small theme-text-muted mb-2">
+                                                            <span>Subtotal Labor & Parts:</span>
+                                                            <strong className="theme-text-main">₹ {activeBooking.subtotal.toFixed(2)}</strong>
+                                                        </div>
+                                                        <div className="d-flex justify-content-between small theme-text-muted mb-2">
+                                                            <span>GST (18% Standard):</span>
+                                                            <strong className="theme-text-main">₹ {activeBooking.tax.toFixed(2)}</strong>
+                                                        </div>
+                                                        <div className="d-flex justify-content-between fs-4 fw-bold pt-2 border-top border-subtle mb-3">
+                                                            <span>Total Amount:</span>
+                                                            <span className="text-accent">₹ {activeBooking.total.toFixed(2)}</span>
+                                                        </div>
+                                                        <div className="d-grid gap-2">
+                                                            <button className="btn-glass btn-sm" onClick={() => { setInvoiceBooking(activeBooking); setIsInvoiceModalOpen(true); }}>
+                                                                <i className="fa-solid fa-print me-1"></i>View & Print Tax Invoice
+                                                            </button>
+                                                            {activeBooking.paymentStatus !== 'Paid' ? (
+                                                                <button className="btn-accent btn-sm" onClick={() => handlePayNow(activeBooking.number)}>
+                                                                    <i className="fa-solid fa-bolt me-1"></i>Pay Now via Razorpay
+                                                                </button>
+                                                            ) : (
+                                                                <div className="text-center text-success fw-bold small p-2 rounded bg-success bg-opacity-10 border border-success">
+                                                                    <i className="fa-solid fa-check-circle me-1"></i> Payment Settled (PAID)
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* TAB 2: MY GARAGE */}
+                        {activeTab === 'garage' && (
+                            <div>
+                                <div className="d-flex justify-content-between align-items-center mb-4">
+                                    <h4 className="fw-bold mb-0">Registered Vehicles ({vehicles.length})</h4>
+                                    <button className="btn-accent btn-sm" onClick={() => setIsAddVehicleOpen(true)}>
+                                        <i className="fa-solid fa-plus me-1"></i>Add New Vehicle
+                                    </button>
+                                </div>
+
+                                <div className="row g-4">
+                                    {vehicles.map(v => (
+                                        <div key={v.id} className="col-md-6 col-lg-4">
+                                            <div className="premium-service-card">
+                                                <div className="d-flex justify-content-between align-items-start mb-3">
+                                                    <div className="service-icon-box mb-0"><i className="fa-solid fa-car"></i></div>
+                                                    <span className="badge badge-accent">{v.health}</span>
+                                                </div>
+                                                <h4 className="fw-bold mb-1">{v.make}</h4>
+                                                <div className="text-accent fw-bold fs-6 mb-3">{v.reg}</div>
+                                                <div className="small theme-text-muted mb-3 flex-grow-1">
+                                                    <div>Year: <strong className="theme-text-main">{v.year}</strong></div>
+                                                    <div>Fuel: <strong className="theme-text-main">{v.fuel}</strong></div>
+                                                    <div>Color: <strong className="theme-text-main">{v.color}</strong></div>
+                                                    <div>Odometer: <strong className="theme-text-main">{v.odometer.toLocaleString()} KM</strong></div>
+                                                </div>
+                                                <button
+                                                    className="btn-accent btn-sm w-100"
+                                                    onClick={() => {
+                                                        setWCar(`${v.make} (${v.reg})`);
+                                                        setActiveTab('book');
+                                                    }}
+                                                >
+                                                    <i className="fa-solid fa-wrench me-1"></i>Book Service for this Car
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* TAB 3: SERVICE HISTORY */}
+                        {activeTab === 'history' && (
+                            <div>
+                                <h4 className="fw-bold mb-3">Complete Vehicle Service History</h4>
+                                <div className="glass-panel p-4">
+                                    <div className="table-responsive">
+                                        <table className="table table-custom">
+                                            <thead>
+                                                <tr>
+                                                    <th>Booking Ref</th>
+                                                    <th>Vehicle</th>
+                                                    <th>Services Rendered</th>
+                                                    <th>Status</th>
+                                                    <th>Total Paid</th>
+                                                    <th>Invoice</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {bookings.map(b => (
+                                                    <tr key={b.number}>
+                                                        <td><strong>{b.number}</strong></td>
+                                                        <td>
+                                                            <div>{b.car}</div>
+                                                            <small className="badge badge-accent">{b.reg}</small>
+                                                        </td>
+                                                        <td>
+                                                            <small className="theme-text-muted">{b.services.join(', ')}</small>
+                                                        </td>
+                                                        <td>
+                                                            <span className={`badge bg-${b.status === 'Delivered' ? 'success' : 'warning bg-opacity-25 text-warning border border-warning'}`}>
+                                                                {b.status}
+                                                            </span>
+                                                        </td>
+                                                        <td className="fw-bold">
+                                                            ₹ {b.total.toFixed(2)}
+                                                            <small className={`d-block ${b.paymentStatus === 'Paid' ? 'text-success' : 'text-danger'}`}>
+                                                                {b.paymentStatus}
+                                                            </small>
+                                                        </td>
+                                                        <td>
+                                                            <button
+                                                                className="btn btn-sm btn-glass py-1 px-2"
+                                                                onClick={() => {
+                                                                    setInvoiceBooking(b);
+                                                                    setIsInvoiceModalOpen(true);
+                                                                }}
+                                                            >
+                                                                <i className="fa-solid fa-print me-1"></i>View
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* TAB 4: BOOK SERVICE WIZARD */}
+                        {activeTab === 'book' && (
+                            <div className="row justify-content-center">
+                                <div className="col-lg-8">
+                                    <div className="glass-panel p-4 p-md-5">
+                                        <h4 className="fw-bold mb-4">
+                                            <i className="fa-solid fa-calendar-check text-accent me-2"></i>Schedule Doorstep Vehicle Pickup
+                                        </h4>
+                                        <form onSubmit={handleCreateBooking}>
+                                            <div className="row g-3 mb-4">
+                                                <div className="col-md-6">
+                                                    <label className="small theme-text-muted mb-1">Select Your Vehicle *</label>
+                                                    <select className="luxury-input w-100" value={wCar} onChange={(e) => setWCar(e.target.value)} required>
+                                                        {vehicles.map(v => (
+                                                            <option key={v.id} value={`${v.make} (${v.reg})`}>
+                                                                {v.make} - {v.reg} ({v.fuel})
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                                <div className="col-md-6">
+                                                    <label className="small theme-text-muted mb-1">Preferred Pickup Date *</label>
+                                                    <input type="date" className="luxury-input w-100" value={wDate} onChange={(e) => setWDate(e.target.value)} required />
+                                                </div>
+                                                <div className="col-md-6">
+                                                    <label className="small theme-text-muted mb-1">Preferred Time Window *</label>
+                                                    <select className="luxury-input w-100" value={wTime} onChange={(e) => setWTime(e.target.value)}>
+                                                        <option>09:00 AM - 11:00 AM (Morning)</option>
+                                                        <option>11:00 AM - 01:00 PM (Mid-day)</option>
+                                                        <option>02:00 PM - 04:00 PM (Afternoon)</option>
+                                                    </select>
+                                                </div>
+                                                <div className="col-md-6">
+                                                    <label className="small theme-text-muted mb-1">Complete Doorstep Address *</label>
+                                                    <input type="text" className="luxury-input w-100" value={wAddress} onChange={(e) => setWAddress(e.target.value)} required />
+                                                </div>
+                                            </div>
+
+                                            <h6 className="fw-bold text-accent text-uppercase mb-3">Select Desired Services</h6>
+                                            <div className="row g-2 mb-4">
+                                                {INITIAL_SERVICES.map(s => {
+                                                    const isSel = wServices.includes(s.id);
+                                                    return (
+                                                        <div key={s.id} className="col-md-6">
+                                                            <label className={`p-2 rounded border d-flex justify-content-between align-items-center cursor-pointer ${isSel ? 'border-primary bg-primary bg-opacity-10' : 'border-subtle bg-surface'}`}>
+                                                                <span>
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        className="form-check-input me-2"
+                                                                        checked={isSel}
+                                                                        onChange={() => {
+                                                                            if (isSel) setWServices(wServices.filter(id => id !== s.id));
+                                                                            else setWServices([...wServices, s.id]);
+                                                                        }}
+                                                                    />
+                                                                    <strong className="theme-text-main small">{s.name}</strong>
+                                                                </span>
+                                                                <span className="text-accent fw-bold small">₹ {s.price}</span>
+                                                            </label>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+
+                                            <div className="d-flex justify-content-end">
+                                                <button type="submit" className="btn-accent btn-lg px-4" disabled={wServices.length === 0}>
+                                                    <i className="fa-solid fa-circle-check me-2"></i>Confirm & Book Pickup
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                    </div>
+
+                    {/* MODAL: ADD VEHICLE */}
+                    {isAddVehicleOpen && (
+                        <div className="modal show d-block" style={{ backgroundColor: 'var(--modal-backdrop)', backdropFilter: 'blur(10px)' }}>
+                            <div className="modal-dialog modal-dialog-centered">
+                                <div className="modal-content luxury-modal p-4">
+                                    <div className="d-flex justify-content-between align-items-center border-bottom border-subtle pb-3 mb-3">
+                                        <h5 className="fw-bold mb-0"><i className="fa-solid fa-car text-accent me-2"></i>Register New Vehicle</h5>
+                                        <button className="btn-close" onClick={() => setIsAddVehicleOpen(false)}></button>
+                                    </div>
+                                    <form onSubmit={handleAddVehicle}>
+                                        <div className="row g-3 mb-4">
+                                            <div className="col-12">
+                                                <label className="small theme-text-muted mb-1">Make & Model *</label>
+                                                <input type="text" className="luxury-input w-100" placeholder="e.g. Kia Seltos GTX+" value={newMake} onChange={(e) => setNewMake(e.target.value)} required />
+                                            </div>
+                                            <div className="col-md-6">
+                                                <label className="small theme-text-muted mb-1">Registration Plate *</label>
+                                                <input type="text" className="luxury-input w-100" placeholder="e.g. DL 08 CA 1234" value={newReg} onChange={(e) => setNewReg(e.target.value)} required />
+                                            </div>
+                                            <div className="col-md-6">
+                                                <label className="small theme-text-muted mb-1">Manufacturing Year</label>
+                                                <input type="number" className="luxury-input w-100" value={newYear} onChange={(e) => setNewYear(e.target.value)} />
+                                            </div>
+                                            <div className="col-md-6">
+                                                <label className="small theme-text-muted mb-1">Fuel Type</label>
+                                                <select className="luxury-input w-100" value={newFuel} onChange={(e) => setNewFuel(e.target.value)}>
+                                                    <option>Petrol</option><option>Diesel</option><option>Electric</option><option>CNG</option><option>Hybrid</option>
+                                                </select>
+                                            </div>
+                                            <div className="col-md-6">
+                                                <label className="small theme-text-muted mb-1">Exterior Color</label>
+                                                <input type="text" className="luxury-input w-100" value={newColor} onChange={(e) => setNewColor(e.target.value)} />
+                                            </div>
+                                            <div className="col-12">
+                                                <label className="small theme-text-muted mb-1">Current Odometer (KM)</label>
+                                                <input type="number" className="luxury-input w-100" value={newOdo} onChange={(e) => setNewOdo(e.target.value)} />
+                                            </div>
+                                        </div>
+                                        <div className="d-flex justify-content-end gap-2">
+                                            <button type="button" className="btn-glass" onClick={() => setIsAddVehicleOpen(false)}>Cancel</button>
+                                            <button type="submit" className="btn-accent">Save Vehicle</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* MODAL: ESTIMATE REVIEW & APPROVAL */}
+                    {isEstimateModalOpen && activeBooking && (
+                        <div className="modal show d-block" style={{ backgroundColor: 'var(--modal-backdrop)', backdropFilter: 'blur(10px)' }}>
+                            <div className="modal-dialog modal-dialog-centered">
+                                <div className="modal-content luxury-modal p-4">
+                                    <div className="d-flex justify-content-between align-items-center border-bottom border-subtle pb-3 mb-3">
+                                        <h5 className="fw-bold mb-0"><i className="fa-solid fa-receipt text-accent me-2"></i>Technician Service Quotation</h5>
+                                        <button className="btn-close" onClick={() => setIsEstimateModalOpen(false)}></button>
+                                    </div>
+                                    <div className="kpi-card mb-3">
+                                        <div className="d-flex justify-content-between mb-2">
+                                            <span>Parts & Spares:</span>
+                                            <strong className="theme-text-main">₹ {activeBooking.estimate.parts.toFixed(2)}</strong>
+                                        </div>
+                                        <div className="d-flex justify-content-between mb-2">
+                                            <span>Certified Labor & Tuning:</span>
+                                            <strong className="theme-text-main">₹ {activeBooking.estimate.labor.toFixed(2)}</strong>
+                                        </div>
+                                        <div className="d-flex justify-content-between mb-2">
+                                            <span>GST (18%):</span>
+                                            <strong className="theme-text-main">₹ {((activeBooking.estimate.parts + activeBooking.estimate.labor) * 0.18).toFixed(2)}</strong>
+                                        </div>
+                                        <hr className="border-subtle my-2"/>
+                                        <div className="d-flex justify-content-between fs-5 fw-bold text-accent">
+                                            <span>Grand Total:</span>
+                                            <strong>₹ {((activeBooking.estimate.parts + activeBooking.estimate.labor) * 1.18).toFixed(2)}</strong>
+                                        </div>
+                                    </div>
+                                    <p className="small theme-text-muted mb-4">
+                                        Our master technicians will not proceed without your digital authorization.
+                                    </p>
+                                    <div className="d-flex justify-content-between gap-2">
+                                        <button className="btn btn-outline-danger flex-grow-1" onClick={() => handleApproveEstimate(false)}>
+                                            Request Changes
+                                        </button>
+                                        <button className="btn-accent flex-grow-1" onClick={() => handleApproveEstimate(true)}>
+                                            Approve & Begin Repairs
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* MODAL: PRINT TAX INVOICE */}
+                    {isInvoiceModalOpen && invoiceBooking && (
+                        <div className="modal show d-block" style={{ backgroundColor: 'var(--modal-backdrop)', backdropFilter: 'blur(10px)' }}>
+                            <div className="modal-dialog modal-lg modal-dialog-centered">
+                                <div className="modal-content luxury-modal p-4 p-md-5">
+                                    <div className="d-flex justify-content-between align-items-center border-bottom border-subtle pb-3 mb-4">
+                                        <div>
+                                            <h3 className="brand-logo mb-0">AUTO<span>PRO</span></h3>
+                                            <small className="theme-text-muted">Official GST Electronic Tax Invoice</small>
+                                        </div>
+                                        <div className="text-end">
+                                            <span className={`badge bg-${invoiceBooking.paymentStatus === 'Paid' ? 'success' : 'danger'} mb-1`}>
+                                                {invoiceBooking.paymentStatus === 'Paid' ? 'PAID' : 'PAYMENT DUE'}
+                                            </span>
+                                            <div className="small theme-text-muted">INV-{invoiceBooking.number}</div>
+                                        </div>
+                                    </div>
+
+                                    <div className="row g-3 mb-4 small">
+                                        <div className="col-6">
+                                            <strong className="text-accent text-uppercase d-block mb-1">Customer Details</strong>
+                                            <div className="theme-text-main fw-bold">{invoiceBooking.customer}</div>
+                                            <div className="theme-text-muted">{invoiceBooking.phone}</div>
+                                            <div className="theme-text-muted">{invoiceBooking.address}</div>
+                                        </div>
+                                        <div className="col-6 text-end">
+                                            <strong className="text-accent text-uppercase d-block mb-1">Vehicle Details</strong>
+                                            <div className="theme-text-main fw-bold">{invoiceBooking.car}</div>
+                                            <span className="badge badge-accent">{invoiceBooking.reg}</span>
+                                            <div className="theme-text-muted mt-1">Odometer: {invoiceBooking.odometer.toLocaleString()} KM</div>
+                                        </div>
+                                    </div>
+
+                                    <div className="table-responsive mb-4">
+                                        <table className="table table-custom">
+                                            <thead>
+                                                <tr><th>Item / Service</th><th className="text-end">Amount</th></tr>
+                                            </thead>
+                                            <tbody>
+                                                {invoiceBooking.services.map((srv, idx) => (
+                                                    <tr key={idx}><td>{srv}</td><td className="text-end fw-bold theme-text-main">Included</td></tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <div className="kpi-card mb-4 ms-auto" style={{ maxWidth: '350px' }}>
+                                        <div className="d-flex justify-content-between small mb-1"><span>Subtotal:</span><strong>₹ {invoiceBooking.subtotal.toFixed(2)}</strong></div>
+                                        <div className="d-flex justify-content-between small mb-1"><span>GST (18%):</span><strong>₹ {invoiceBooking.tax.toFixed(2)}</strong></div>
+                                        <div className="d-flex justify-content-between fs-5 fw-bold text-accent border-top border-subtle pt-1"><span>Total:</span><strong>₹ {invoiceBooking.total.toFixed(2)}</strong></div>
+                                    </div>
+
+                                    <div className="d-flex justify-content-between">
+                                        <button className="btn-glass" onClick={() => setIsInvoiceModalOpen(false)}>Close</button>
+                                        <button className="btn-accent" onClick={() => window.print()}><i className="fa-solid fa-print me-1"></i>Print PDF</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Footer */}
+                    <footer className="site-footer mt-auto">
+                        <div className="container">
+                            <div className="d-flex flex-wrap justify-content-between small theme-text-muted">
+                                <span>&copy; 2026 AutoPro Car Care Platform. Customer Portal.</span>
+                                <span>Helpline: +91 (800) 456-7890</span>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('customer-root'));
+        root.render(<CustomerPortalApp />);
+    </script>
+</body>
+</html>

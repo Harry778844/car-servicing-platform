@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Workspace - AutoPro Car Care</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏎️</text></svg>">
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6.5 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Base & Premium Theme CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/premium.css">
+    
+    <!-- React 18, ReactDOM 18 & Babel Standalone CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Shared Store -->
+    <script src="assets/js/shared-store.js"></script>
+</head>
+<body>
+
+    <div id="employee-root">
+        <!-- Pre-hydration loader -->
+        <div class="d-flex flex-column align-items-center justify-content-center min-vh-100" style="background-color: #f8fafc; color: #0f172a;">
+            <div class="spinner-grow mb-3" style="width: 3rem; height: 3rem; color: #590907;" role="status"></div>
+            <h3 class="fw-bold brand-logo">AUTO<span style="color: #590907;">PRO</span></h3>
+            <p class="text-muted small">Loading Employee Operations Console...</p>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5.3 Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- React Employee App -->
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        function EmployeePortalApp() {
+            const [bookings, setBookings] = useState(loadBookings);
+            const [empRole, setEmpRole] = useState('driver'); // 'driver' or 'technician'
+            const [toast, setToast] = useState(null);
+
+            // Inspection Modal State (Technician)
+            const [selectedBookingForInsp, setSelectedBookingForInsp] = useState(null);
+            const [partsCost, setPartsCost] = useState(2500);
+            const [laborCost, setLaborCost] = useState(2200);
+
+            // Doorstep Inspection State (Driver)
+            const [driverOdo, setDriverOdo] = useState('');
+            const [driverFuel, setDriverFuel] = useState('75% (3/4 Tank)');
+
+            // Sync with other tabs
+            useEffect(() => {
+                const handleSync = () => setBookings(loadBookings());
+                window.addEventListener('autopro_storage_change', handleSync);
+                window.addEventListener('storage', handleSync);
+                return () => {
+                    window.removeEventListener('autopro_storage_change', handleSync);
+                    window.removeEventListener('storage', handleSync);
+                };
+            }, []);
+
+            const showToast = (msg) => {
+                setToast(msg);
+                setTimeout(() => setToast(null), 3500);
+            };
+
+            // Update booking status helper
+            const updateBookingStatus = (bookingNum, newStatus, customRemarks = null) => {
+                const stepIdx = STATUS_PIPELINE.indexOf(newStatus) + 1;
+                const updated = bookings.map(b => {
+                    if (b.number === bookingNum) {
+                        return {
+                            ...b,
+                            status: newStatus,
+                            stepIndex: stepIdx,
+                            remarks: customRemarks || `Status updated to ${newStatus} by ${empRole === 'driver' ? 'Pickup Executive' : 'Bay Technician'}.`,
+                            paymentStatus: newStatus === 'Delivered' ? 'Paid' : b.paymentStatus
+                        };
+                    }
+                    return b;
+                });
+                setBookings(updated);
+                saveBookings(updated);
+                showToast(`${bookingNum} advanced to: ${newStatus}`);
+            };
+
+            // Handle Submitting Quote
+            const handleSubmitQuote = (e) => {
+                e.preventDefault();
+                if (!selectedBookingForInsp) return;
+                const p = parseFloat(partsCost) || 0;
+                const l = parseFloat(laborCost) || 0;
+                const sub = p + l;
+                const tax = sub * 0.18;
+                const grand = sub + tax;
+
+                const updated = bookings.map(b => {
+                    if (b.number === selectedBookingForInsp.number) {
+                        return {
+                            ...b,
+                            status: 'Waiting for Customer Approval',
+                            stepIndex: 7,
+                            subtotal: sub,
+                            tax: tax,
+                            total: grand,
+                            estimate: { parts: p, labor: l, discount: 0, approved: false },
+                            remarks: `Quote submitted: Parts ₹${p} + Labor ₹${l}. Awaiting digital customer authorization.`
+                        };
+                    }
+                    return b;
+                });
+                setBookings(updated);
+                saveBookings(updated);
+                setSelectedBookingForInsp(null);
+                showToast(`Estimate submitted to customer for ${selectedBookingForInsp.number}!`);
+            };
+
+            return (
+                <div className="min-vh-100 d-flex flex-column">
+                    {/* Toast Notification */}
+                    {toast && (
+                        <div className="position-fixed bottom-0 end-0 p-3" style={{ zIndex: 9999 }}>
+                            <div className="toast show align-items-center shadow-lg p-2 rounded glass-panel">
+                                <div className="d-flex align-items-center">
+                                    <i className="fa-solid fa-circle-check text-accent fs-5 me-2 ms-2"></i>
+                                    <div className="toast-body fw-bold theme-text-main">{toast}</div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Top Utility Bar */}
+                    <div className="top-bar-custom py-2">
+                        <div className="container d-flex flex-wrap justify-content-between align-items-center gap-2">
+                            <div>
+                                <span className="me-3">
+                                    <i className="fa-solid fa-phone text-accent me-1"></i> Workshop Control: <a href="tel:+918004567890" className="fw-bold theme-text-main text-decoration-none">+91 (800) 456-7890</a>
+                                </span>
+                                <span className="theme-text-muted d-none d-md-inline">
+                                    <i className="fa-solid fa-gears text-accent me-1"></i> Field & Workshop Operations System
+                                </span>
+                            </div>
+
+                            <div className="d-flex align-items-center gap-2">
+                                <span className="badge px-3 py-1 text-white d-inline-flex align-items-center" style={{ backgroundColor: '#590907', letterSpacing: '0.5px', fontSize: '0.75rem', borderRadius: '20px' }}>
+                                    <i className="fa-solid fa-id-badge me-1"></i> {empRole === 'driver' ? 'Vikram Singh (EMP-DRV-101)' : 'Manoj Verma (EMP-TECH-201)'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Navigation Header */}
+                    <nav className="premium-nav sticky-top">
+                        <div className="container d-flex justify-content-between align-items-center">
+                            <a href="index.html" className="brand-logo text-decoration-none d-flex align-items-center">
+                                <i className="fa-solid fa-car-tunnel me-2 text-accent"></i>AUTO<span>PRO</span>
+                            </a>
+
+                            <div className="d-none d-md-flex align-items-center gap-4">
+                                <a href="index.html" className="nav-link-custom">Home</a>
+                                <a href="customer.html" className="nav-link-custom">Customer Portal</a>
+                                <a href="employee.html" className="nav-link-custom active fw-bold text-accent">Employee Portal</a>
+                                <a href="admin.html" className="nav-link-custom">Admin Command</a>
+                            </div>
+
+                            <div className="d-flex align-items-center gap-2">
+                                <span className="badge bg-surface border border-subtle text-accent px-2 py-1 small">
+                                    Staff Active
+                                </span>
+                            </div>
+                        </div>
+                    </nav>
+
+                    {/* Role Header Banner */}
+                    <div className="section-alt py-4 border-bottom border-subtle">
+                        <div className="container">
+                            <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                                <div>
+                                    <div className="hero-tag mb-2">
+                                        <i className="fa-solid fa-hard-hat me-1"></i> Workshop Operations & Field Logistics
+                                    </div>
+                                    <h2 className="fw-bold fs-2 mb-1">
+                                        {empRole === 'driver' ? 'Doorstep Logistics & Driver Console' : 'Workshop Diagnostic & Technician Bay'}
+                                    </h2>
+                                    <p className="theme-text-muted mb-0">
+                                        Update real-time vehicle telematics, log doorstep inspections, and advance repair stages.
+                                    </p>
+                                </div>
+
+                                {/* Role Switcher Toggle */}
+                                <div className="btn-group p-1 bg-surface rounded border border-subtle">
+                                    <button
+                                        className={`btn btn-sm ${empRole === 'driver' ? 'btn-accent' : 'btn-glass border-0'}`}
+                                        onClick={() => setEmpRole('driver')}
+                                    >
+                                        <i className="fa-solid fa-truck-pickup me-1"></i>Pickup Executive
+                                    </button>
+                                    <button
+                                        className={`btn btn-sm ${empRole === 'technician' ? 'btn-accent' : 'btn-glass border-0'}`}
+                                        onClick={() => setEmpRole('technician')}
+                                    >
+                                        <i className="fa-solid fa-screwdriver-wrench me-1"></i>Diagnostic Technician
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Main Workspace Body */}
+                    <div className="container py-4">
+
+                        {/* VIEW 1: PICKUP EXECUTIVE (DRIVER) */}
+                        {empRole === 'driver' && (
+                            <div>
+                                <div className="d-flex justify-content-between align-items-center mb-4">
+                                    <h4 className="fw-bold mb-0">
+                                        <i className="fa-solid fa-route text-accent me-2"></i>Assigned Doorstep Pickup & Delivery Routes
+                                    </h4>
+                                    <span className="badge badge-accent fs-6">{bookings.length} Vehicles In Scope</span>
+                                </div>
+
+                                <div className="row g-4">
+                                    {bookings.map(b => (
+                                        <div key={b.number} className="col-lg-6">
+                                            <div className="glass-panel p-4 h-100 d-flex flex-column">
+                                                <div className="d-flex justify-content-between align-items-start mb-3 border-bottom border-subtle pb-3">
+                                                    <div>
+                                                        <span className="badge bg-secondary me-2">{b.number}</span>
+                                                        <span className="badge badge-accent">{b.reg}</span>
+                                                        <h5 className="fw-bold mb-0 mt-2">{b.car}</h5>
+                                                    </div>
+                                                    <span className={`badge bg-${b.status === 'Delivered' ? 'success' : 'warning bg-opacity-25 text-warning border border-warning'}`}>
+                                                        {b.status}
+                                                    </span>
+                                                </div>
+
+                                                <div className="row g-2 small theme-text-muted mb-3">
+                                                    <div className="col-6">
+                                                        <strong className="theme-text-main d-block">Customer:</strong>
+                                                        {b.customer} ({b.phone})
+                                                    </div>
+                                                    <div className="col-6">
+                                                        <strong className="theme-text-main d-block">Scheduled Slot:</strong>
+                                                        {b.date || 'Today'} &bull; {b.time || 'Morning Slot'}
+                                                    </div>
+                                                    <div className="col-12 mt-2">
+                                                        <strong className="theme-text-main d-block"><i className="fa-solid fa-location-dot text-accent me-1"></i>Address:</strong>
+                                                        {b.address}
+                                                    </div>
+                                                    <div className="col-12 mt-2">
+                                                        <div className="p-2 rounded bg-surface border border-subtle">
+                                                            <strong>Current Audit Note:</strong> {b.remarks}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="mt-auto pt-3 border-top border-subtle">
+                                                    <small className="fw-bold text-uppercase text-accent d-block mb-2">Driver Progression Controls:</small>
+                                                    <div className="d-flex flex-wrap gap-2">
+                                                        <button
+                                                            className="btn btn-sm btn-accent"
+                                                            disabled={b.stepIndex >= 4}
+                                                            onClick={() => updateBookingStatus(b.number, 'Vehicle Picked Up', 'Driver collected vehicle from customer doorstep after exterior check.')}
+                                                        >
+                                                            <i className="fa-solid fa-key me-1"></i>1. Mark Picked Up
+                                                        </button>
+                                                        <button
+                                                            className="btn btn-sm btn-glass"
+                                                            disabled={b.stepIndex >= 5 || b.stepIndex < 4}
+                                                            onClick={() => updateBookingStatus(b.number, 'Vehicle Received at Workshop', 'Vehicle arrived safely at workshop entry bay for diagnostic intake.')}
+                                                        >
+                                                            <i className="fa-solid fa-warehouse me-1"></i>2. Check-in Workshop
+                                                        </button>
+                                                        <button
+                                                            className="btn btn-sm btn-glass"
+                                                            disabled={b.stepIndex >= 11 || b.stepIndex < 9}
+                                                            onClick={() => updateBookingStatus(b.number, 'Out for Delivery', 'Driver dispatched to customer doorstep for return delivery.')}
+                                                        >
+                                                            <i className="fa-solid fa-truck-fast me-1"></i>3. Out for Delivery
+                                                        </button>
+                                                        <button
+                                                            className="btn btn-sm btn-success"
+                                                            disabled={b.status === 'Delivered'}
+                                                            onClick={() => updateBookingStatus(b.number, 'Delivered', 'Vehicle safely returned to customer doorstep. Keys handed over & job closed.')}
+                                                        >
+                                                            <i className="fa-solid fa-check-double me-1"></i>4. Handover & Close
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* VIEW 2: SERVICE TECHNICIAN (BAY) */}
+                        {empRole === 'technician' && (
+                            <div>
+                                <div className="d-flex justify-content-between align-items-center mb-4">
+                                    <h4 className="fw-bold mb-0">
+                                        <i className="fa-solid fa-wrench text-accent me-2"></i>Active Workshop Bays & Diagnostic Queue
+                                    </h4>
+                                    <span className="badge badge-accent fs-6">Master Technician Lead</span>
+                                </div>
+
+                                <div className="row g-4">
+                                    {bookings.map(b => (
+                                        <div key={b.number} className="col-lg-6">
+                                            <div className="glass-panel p-4 h-100 d-flex flex-column">
+                                                <div className="d-flex justify-content-between align-items-start mb-3 border-bottom border-subtle pb-3">
+                                                    <div>
+                                                        <span className="badge bg-secondary me-2">{b.number}</span>
+                                                        <span className="badge badge-accent">{b.reg}</span>
+                                                        <h5 className="fw-bold mb-0 mt-2">{b.car}</h5>
+                                                    </div>
+                                                    <span className={`badge bg-${b.status === 'Service Completed' || b.status === 'Delivered' ? 'success' : 'warning bg-opacity-25 text-warning border border-warning'}`}>
+                                                        {b.status}
+                                                    </span>
+                                                </div>
+
+                                                <div className="small theme-text-muted mb-3">
+                                                    <div><strong>Diagnostic Scanner:</strong> OBD-II Electronic Protocol Linked</div>
+                                                    <div><strong>Odometer:</strong> {b.odometer.toLocaleString()} KM &bull; <strong>Fuel:</strong> {b.fuelLevel}</div>
+                                                    <div className="mt-2">
+                                                        <strong className="theme-text-main">Requested Operations:</strong>
+                                                        <ul className="mb-0 ps-3 mt-1">
+                                                            {b.services.map((s, idx) => <li key={idx}>{s}</li>)}
+                                                        </ul>
+                                                    </div>
+                                                    <div className="mt-2 p-2 rounded bg-surface border border-subtle">
+                                                        <strong>Current Status Note:</strong> {b.remarks}
+                                                    </div>
+                                                </div>
+
+                                                <div className="mt-auto pt-3 border-top border-subtle">
+                                                    <small className="fw-bold text-uppercase text-accent d-block mb-2">Technician Bay Actions:</small>
+                                                    <div className="d-flex flex-wrap gap-2">
+                                                        <button
+                                                            className="btn btn-sm btn-glass"
+                                                            disabled={b.stepIndex >= 6}
+                                                            onClick={() => updateBookingStatus(b.number, 'Inspection in Progress', 'Master technician executing 60-point mechanical & OBD-II diagnostic scan.')}
+                                                        >
+                                                            <i className="fa-solid fa-clipboard-check me-1"></i>1. Start Inspection
+                                                        </button>
+
+                                                        <button
+                                                            className="btn btn-sm btn-accent"
+                                                            onClick={() => {
+                                                                setSelectedBookingForInsp(b);
+                                                                setPartsCost(b.estimate ? b.estimate.parts : 2000);
+                                                                setLaborCost(b.estimate ? b.estimate.labor : 1500);
+                                                            }}
+                                                        >
+                                                            <i className="fa-solid fa-calculator me-1"></i>2. Build / Edit Estimate
+                                                        </button>
+
+                                                        <button
+                                                            className="btn btn-sm btn-glass"
+                                                            disabled={b.stepIndex >= 8 || b.status === 'Delivered'}
+                                                            onClick={() => updateBookingStatus(b.number, 'Service in Progress', 'Approved repairs underway on Bay hydraulic hoist. Engine & brake tuning active.')}
+                                                        >
+                                                            <i className="fa-solid fa-gears me-1"></i>3. Begin Bay Service
+                                                        </button>
+
+                                                        <button
+                                                            className="btn btn-sm btn-success"
+                                                            disabled={b.stepIndex >= 9 || b.status === 'Delivered'}
+                                                            onClick={() => updateBookingStatus(b.number, 'Service Completed', 'All mechanical tasks finished. 60-point road-test passed. Vehicle sanitized.')}
+                                                        >
+                                                            <i className="fa-solid fa-check-circle me-1"></i>4. Pass & Complete
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                    </div>
+
+                    {/* MODAL: TECHNICIAN ESTIMATE BUILDER */}
+                    {selectedBookingForInsp && (
+                        <div className="modal show d-block" style={{ backgroundColor: 'var(--modal-backdrop)', backdropFilter: 'blur(10px)' }}>
+                            <div className="modal-dialog modal-dialog-centered">
+                                <div className="modal-content luxury-modal p-4">
+                                    <div className="d-flex justify-content-between align-items-center border-bottom border-subtle pb-3 mb-3">
+                                        <h5 className="fw-bold mb-0">
+                                            <i className="fa-solid fa-receipt text-accent me-2"></i>Service Estimate Builder ({selectedBookingForInsp.car})
+                                        </h5>
+                                        <button className="btn-close" onClick={() => setSelectedBookingForInsp(null)}></button>
+                                    </div>
+                                    <form onSubmit={handleSubmitQuote}>
+                                        <div className="mb-3">
+                                            <label className="small theme-text-muted mb-1">OEM Spare Parts Cost (₹) *</label>
+                                            <input
+                                                type="number"
+                                                className="luxury-input w-100"
+                                                value={partsCost}
+                                                onChange={(e) => setPartsCost(e.target.value)}
+                                                required
+                                            />
+                                        </div>
+                                        <div className="mb-3">
+                                            <label className="small theme-text-muted mb-1">Certified Diagnostic & Tuning Labor (₹) *</label>
+                                            <input
+                                                type="number"
+                                                className="luxury-input w-100"
+                                                value={laborCost}
+                                                onChange={(e) => setLaborCost(e.target.value)}
+                                                required
+                                            />
+                                        </div>
+                                        <div className="kpi-card mb-4 small">
+                                            <div className="d-flex justify-content-between mb-1">
+                                                <span>Subtotal:</span>
+                                                <strong>₹ {((parseFloat(partsCost) || 0) + (parseFloat(laborCost) || 0)).toFixed(2)}</strong>
+                                            </div>
+                                            <div className="d-flex justify-content-between mb-1">
+                                                <span>GST (18%):</span>
+                                                <strong>₹ {(((parseFloat(partsCost) || 0) + (parseFloat(laborCost) || 0)) * 0.18).toFixed(2)}</strong>
+                                            </div>
+                                            <div className="d-flex justify-content-between fs-5 fw-bold text-accent border-top border-subtle pt-1">
+                                                <span>Grand Total:</span>
+                                                <strong>₹ {(((parseFloat(partsCost) || 0) + (parseFloat(laborCost) || 0)) * 1.18).toFixed(2)}</strong>
+                                            </div>
+                                        </div>
+                                        <div className="d-flex justify-content-end gap-2">
+                                            <button type="button" className="btn-glass" onClick={() => setSelectedBookingForInsp(null)}>Cancel</button>
+                                            <button type="submit" className="btn-accent">Submit to Customer for Approval</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Footer */}
+                    <footer className="site-footer mt-auto">
+                        <div className="container">
+                            <div className="d-flex flex-wrap justify-content-between small theme-text-muted">
+                                <span>&copy; 2026 AutoPro Car Care Platform. Employee Workspace.</span>
+                                <span>Authorized Workshop Staff Only</span>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('employee-root'));
+        root.render(<EmployeePortalApp />);
+    </script>
+</body>
+</html>

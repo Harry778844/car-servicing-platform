@@ -99,10 +99,23 @@ const INITIAL_BOOKINGS = [
 ];
 
 function AutoProApp() {
-  const [bookings, setBookings] = useState(INITIAL_BOOKINGS);
+  const [bookings, setBookings] = useState(() => (typeof loadBookings === 'function' ? loadBookings() : INITIAL_BOOKINGS));
   const [activeTrackingQuery, setActiveTrackingQuery] = useState('BK-2026-001');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [toast, setToast] = useState(null);
+
+  // Sync with other portals via shared store
+  useEffect(() => {
+    const handleSync = () => {
+      if (typeof loadBookings === 'function') setBookings(loadBookings());
+    };
+    window.addEventListener('autopro_storage_change', handleSync);
+    window.addEventListener('storage', handleSync);
+    return () => {
+      window.removeEventListener('autopro_storage_change', handleSync);
+      window.removeEventListener('storage', handleSync);
+    };
+  }, []);
 
   // Modals state
   const [isBookModalOpen, setIsBookModalOpen] = useState(false);
@@ -188,7 +201,9 @@ function AutoProApp() {
       estimate: { parts: wizardTotals.sub * 0.6, labor: wizardTotals.sub * 0.4, discount: 0, approved: false }
     };
 
-    setBookings([newBooking, ...bookings]);
+    const updated = [newBooking, ...bookings];
+    setBookings(updated);
+    if (typeof saveBookings === 'function') saveBookings(updated);
     setActiveTrackingQuery(newNum);
     setIsBookModalOpen(false);
     showToast(`Booking ${newNum} created successfully! Doorstep pickup scheduled.`);
@@ -210,6 +225,7 @@ function AutoProApp() {
       return b;
     });
     setBookings(updated);
+    if (typeof saveBookings === 'function') saveBookings(updated);
     setIsEstimateModalOpen(false);
     showToast(approved ? 'Estimate approved! Bay technicians started servicing.' : 'Estimate revision requested.');
   };
@@ -230,6 +246,7 @@ function AutoProApp() {
       return b;
     });
     setBookings(updated);
+    if (typeof saveBookings === 'function') saveBookings(updated);
     showToast(`Updated ${bookingNumber} status to ${newStatus}`);
   };
 
@@ -277,14 +294,22 @@ function AutoProApp() {
           <div className="d-none d-lg-flex align-items-center gap-4">
             <a href="#services" className="nav-link-custom">Services</a>
             <a href="#telematics" className="nav-link-custom">12-Stage Tracker</a>
-            <a href="#workflow" className="nav-link-custom">Workflow</a>
-            <a href="#guarantee" className="nav-link-custom">Warranty</a>
+            <a href="customer.html" className="nav-link-custom"><i className="fa-solid fa-user me-1 text-accent"></i>Customer Portal</a>
+            <a href="employee.html" className="nav-link-custom"><i className="fa-solid fa-truck-pickup me-1 text-accent"></i>Employee Portal</a>
+            <a href="admin.html" className="nav-link-custom"><i className="fa-solid fa-shield-halved me-1 text-accent"></i>Admin Command</a>
           </div>
 
           <div className="d-flex align-items-center gap-2">
-            <button className="btn-glass btn-sm" onClick={() => setIsPortalModalOpen(true)}>
-              <i className="fa-solid fa-gauge-high text-accent me-1"></i>Portals Demo
-            </button>
+            <div className="dropdown d-none d-sm-block">
+              <button className="btn-glass btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                <i className="fa-solid fa-layer-group text-accent me-1"></i>Portals
+              </button>
+              <ul className="dropdown-menu dropdown-menu-end shadow border-subtle">
+                <li><a className="dropdown-item py-2" href="customer.html"><i className="fa-solid fa-user me-2 text-accent"></i>Customer Portal</a></li>
+                <li><a className="dropdown-item py-2" href="employee.html"><i className="fa-solid fa-truck-pickup me-2 text-accent"></i>Employee Workspace</a></li>
+                <li><a className="dropdown-item py-2" href="admin.html"><i className="fa-solid fa-shield-halved me-2 text-accent"></i>Admin Command Center</a></li>
+              </ul>
+            </div>
             <button className="btn-accent btn-sm" onClick={() => { setWizardStep(1); setIsBookModalOpen(true); }}>
               <i className="fa-solid fa-calendar-check me-1"></i>Book Pickup
             </button>
